@@ -1,0 +1,111 @@
+<%- include('header.html') -%>
+<script>
+  function onSubmit(){
+    return(showLoader(true));
+  }
+</script>
+<% if(homepage){ %>
+  <div class="w3-card w3-round w3-section" style="max-width: 800px;margin: auto;">
+    <div class="w3-cell-row w3-dark-gray">
+      <div class="w3-cell w3-padding">
+        <label><b><%= homepage_title %></b></label>
+      </div>
+    </div>
+    <div class="w3-light-grey" style="padding: 8px 0px;">
+      <div class="w3-cell-row w3-padding-small">
+        <% Object.keys(homepage_values).map(key => { %>
+          <div class="w3-cell w3-left w3-padding-small">
+            <span class="w3-tag w3-light-grey w3-border"><b><%= key %></b></span>
+            <span class="w3-tag w3-white w3-border"><%= homepage_values[key] %></span>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+<% } else { %>
+<div class="w3-sand w3-topbar w3-bottombar w3-border-gray" >
+  <div class="w3-cell-row" >
+    <% Object.keys(env).map(key => { %>
+      <div class="w3-cell w3-left w3-padding-small w3-small">
+        <span class="w3-tag w3-light-grey w3-border"><b><%= key %></b></span>
+        <span class="w3-tag w3-white w3-border"><%= env[key] %></span>
+      </div>
+    <% }) %>
+  </div>
+  <% if(exists){ %>
+  <div class="w3-cell-row w3-topbar w3-padding w3-center w3-text-green" >
+    <b>Shortcuts already exist. Try it under the BACK OFFICE / SERVER SHORTCUTS menu!</b>
+  </div>
+  <% } %>
+</div>
+<% if(!exists){ %>
+<div class="w3-card w3-round w3-section" style="max-width: 800px;margin: auto;">
+  <div class="w3-cell-row w3-dark-gray">
+    <div class="w3-cell w3-padding">
+      <label><b><%= title %></b></label>
+    </div>
+  </div>
+  <div class="w3-light-grey" style="padding: 8px 0px;">
+    <div class="w3-cell-row">
+      <div class="w3-cell">
+        <form action="/server_shortcuts" method="post" onsubmit="onSubmit();" >
+          <div class="w3-cell-row w3-padding-small">
+            <div class="w3-cell w3-padding-small">
+              <label><b>username</b></label>
+              <input name="username" class="w3-input w3-border w3-round" 
+                type="text" value="<%= username %>" readonly>
+            </div>
+            <div class="w3-cell w3-padding-small">
+              <label><b>database</b></label>
+              <input name="database" class="w3-input w3-border w3-round" 
+                type="text" value="<%= database %>" readonly>
+            </div>
+          </div>
+          <div class="w3-cell-row w3-padding-small">
+            <div class="w3-cell w3-padding-small">
+              <label><b>ui_menu</b></label>
+              <textarea name="trans" class="w3-input w3-border w3-round w3-tiny" 
+                rows="5" readonly="readonly" ><%= JSON.stringify(data.ui_menu,null,"  ") %></textarea>
+            </div>
+            <div class="w3-cell w3-padding-small">
+              <label><b>ui_menufields</b></label>
+              <textarea name="trans" class="w3-input w3-border w3-round w3-tiny" 
+                rows="5" readonly="readonly" ><%= JSON.stringify(data.ui_menufields,null,"  ") %></textarea>
+            </div>
+          </div>
+          <div class="w3-cell-row w3-padding-small w3-border-top">
+            <div class="w3-cell w3-padding-small" style="width: 110px;">
+              <label class="w3-text-blue"><b>API type</b></label>
+            </div>
+            <div class="w3-cell w3-padding-small">
+              <select class="w3-select w3-round" name="api_type">
+                <% ['http','cli','cgo','rpc'].map(value => { %>
+                  <option value="<%= value %>" <%= (api_type === value) ? 'selected="selected"' :'' %> ><%= value.toUpperCase() %></option>
+                <% }) %>
+              </select> 
+            </div>
+            <div class="w3-cell w3-padding">
+              <input type="submit" value="Create" 
+                class="w3-button w3-black w3-round" style="font-weight: bold;" 
+              />
+            </div>
+          </div>
+          <% if(error){ %>
+            <div class="w3-cell-row w3-padding w3-sand">
+              <label class="w3-text-red"><b>&#9785; <%= error %></b></label>
+            </div>
+          <% } %>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<% } else { %>
+<iframe src = "<%= client_url %>" style="position: absolute; height: 70%; width: 100%; border: none" frameborder="0">
+  Sorry your browser does not support inline frames.
+</iframe>
+<% } %>
+
+<% } %>
+
+<%- include('footer.html') -%>

@@ -10,6 +10,7 @@ cd nervatura-examples/node
 npm install
 npm start
 ```
+Open your browser to http://localhost:8080
 
 ## Examples
 
@@ -23,4 +24,4 @@ npm start
 - Nervatura Client menu shortcuts
 - Nervatura CSV Report Example
 
-More info see [**Nervatura Docs**](https://nervatura.github.io/nervatura/docs)
+More info see the [**Nervatura Docs**](https://nervatura.github.io/nervatura/docs)
