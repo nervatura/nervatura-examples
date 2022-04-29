@@ -10,6 +10,7 @@ cd nervatura-examples/node
 npm install
 npm start
 ```
+Open your browser to http://localhost:8080
 
 ## Examples
 
