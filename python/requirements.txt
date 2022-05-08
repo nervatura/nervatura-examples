@@ -1,0 +1,8 @@
+fastapi
+python-dotenv
+requests
+pyjwt
+jinja2
+python-multipart
+grpcio-tools
+nervatura==5.0.4

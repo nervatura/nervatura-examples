@@ -57,7 +57,7 @@ var report_data = {
 var example_data = {
   username: "admin",
   database: "demo",
-  api_type: "http",
+  api_type: "cli",
   title: "CSV Report Example",
   error: null, exists: null, client_url: "",
   env: {
@@ -116,12 +116,7 @@ router.get('/', function (req, res) {
   })
 })
 
-function createReport( params, createCallback) {
-  var token = utils.CreateToken({ 
-    username: params.username, database: params.database,
-    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
-    kid: process.env.NT_TOKEN_PRIVATE_KID
-  })
+function createReport(token, params, createCallback) {
   utils.GetApi(token, params.api_type, "Update", 
     {nervatype: "ui_report", data: params.data.ui_report}, 
     function(err, result){
@@ -141,7 +136,7 @@ router.post('/', function (req, res) {
   })
   checkFunctions(token, req.body.api_type, function(result){
     if(!result){
-      return createReport(params, function(err){
+      return createReport(token, params, function(err){
         res.render('csv_report.html', {
           ...params,
           error: (err) ? err : null,

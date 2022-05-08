@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<p class="w3-large w3-padding" >
+  <b>Nervatura Python Examples</b>
+</p>
+
+<ul>
+  <li>
+    <a href="/create_database" target="_blank" >Create a demo database</a>
+    {% if demo %}
+      <p class="w3-text-red" ><b>Missing demo database. Please run this first!</b></p>
+    {% endif %}
+  </li>
+  <li>
+    <a href="/password_login" target="_blank" >Basic password login</a>
+  </li>
+  <li>
+    <a href="/token_login" target="_blank" >Custom token (passwordless) login - public/private key pair</a>
+  </li>
+  <li>
+    <a href="/client_login" target="_blank" >Nervatura Client custom token login - with the HMAC algorithm</a>
+  </li>
+  <li>
+    <a href="/external_token" target="_blank" >Using external API for token based authentication</a>
+  </li>
+  <li>
+    <a href="/client_config" target="_blank" >Nervatura Client language translation</a>
+  </li>
+  <li>
+    <a href="/create_invoice" target="_blank" >Create an invoice</a>
+  </li>
+  <li>
+    <a href="/server_shortcuts" target="_blank" >Nervatura Client menu shortcuts</a>
+  </li>
+  <li>
+    <a href="/csv_report" target="_blank" >Nervatura CSV Report Example</a>
+  </li>
+</ul>
+
+{% endblock %}

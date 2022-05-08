@@ -107,3 +107,8 @@ demo.db
 *.lock
 Makefile
 .vscode
+
+__pycache__/
+*.py[cod]
+*$py.class
+bin

@@ -19,7 +19,7 @@ var utils = require('../lib/utils');
 var login_data = {
   username: "admin",
   database: "demo",
-  api_type: "http",
+  api_type: "cli",
   title: "Custom token (passwordless) login - public/private key pair",
   error: null, result: null,
   env: {

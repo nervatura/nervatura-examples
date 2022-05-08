@@ -18,7 +18,7 @@ var login_data = {
   username: "admin",
   password: "",
   database: "demo",
-  api_type: "http",
+  api_type: "cli",
   title: "Basic password login",
   error: null, result: null,
   env: {

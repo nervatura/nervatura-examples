@@ -1,4 +1,5 @@
-<%- include('header.html') -%>
+{% extends "base.html" %}
+{% block content %}
 <script>
   function onSubmit(){
     return(showLoader(true));
@@ -6,24 +7,24 @@
 </script>
 <div class="w3-sand w3-topbar w3-bottombar w3-border-gray" >
   <div class="w3-cell-row" >
-    <% Object.keys(env).map(key => { %>
+    {% for key in env %}
       <div class="w3-cell w3-left w3-padding-small w3-small">
-        <span class="w3-tag w3-light-grey w3-border"><b><%= key %></b></span>
-        <span class="w3-tag w3-white w3-border"><%= env[key] %></span>
+        <span class="w3-tag w3-light-grey w3-border"><b>{{key}}</b></span>
+        <span class="w3-tag w3-white w3-border">{{env[key]}}</span>
       </div>
-    <% }) %>
+    {% endfor %}
   </div>
-  <% if(exists){ %>
+  {% if exists %}
   <div class="w3-cell-row w3-topbar w3-padding w3-center w3-text-green" >
     <b>CSV report already exist. Try it under the REPORT menu!</b>
   </div>
-  <% } %>
+  {% endif %}
 </div>
-<% if(!exists){ %>
+{% if exists == False %}
 <div class="w3-card w3-round w3-section" style="max-width: 800px;margin: auto;">
   <div class="w3-cell-row w3-dark-gray">
     <div class="w3-cell w3-padding">
-      <label><b><%= title %></b></label>
+      <label><b>{{title}}</b></label>
     </div>
   </div>
   <div class="w3-light-grey" style="padding: 8px 0px;">
@@ -34,19 +35,19 @@
             <div class="w3-cell w3-padding-small">
               <label><b>username</b></label>
               <input name="username" class="w3-input w3-border w3-round" 
-                type="text" value="<%= username %>" readonly>
+                type="text" value="{{username}}" readonly>
             </div>
             <div class="w3-cell w3-padding-small">
               <label><b>database</b></label>
               <input name="database" class="w3-input w3-border w3-round" 
-                type="text" value="<%= database %>" readonly>
+                type="text" value="{{database}}" readonly>
             </div>
           </div>
           <div class="w3-cell-row w3-padding-small">
             <div class="w3-cell w3-padding-small">
               <label><b>ui_report</b></label>
               <textarea name="trans" class="w3-input w3-border w3-round w3-tiny" 
-                rows="10" readonly="readonly" ><%= JSON.stringify(data.ui_report,null,"  ") %></textarea>
+                rows="10" readonly="readonly" >{{data['ui_report']}}</textarea>
             </div>
           </div>
           <div class="w3-cell-row w3-padding-small w3-border-top">
@@ -55,9 +56,9 @@
             </div>
             <div class="w3-cell w3-padding-small">
               <select class="w3-select w3-round" name="api_type">
-                <% ['cli','cgo','rpc','http'].map(value => { %>
-                  <option value="<%= value %>" <%= (api_type === value) ? 'selected="selected"' :'' %> ><%= value.toUpperCase() %></option>
-                <% }) %>
+                {% for value in ['cli','cgo','rpc','http'] %}
+                  <option value="{{value}}" {{ 'selected=selected' if api_type == value else ''}} >{{value.upper()}}</option>
+                {% endfor %}
               </select> 
             </div>
             <div class="w3-cell w3-padding">
@@ -66,20 +67,20 @@
               />
             </div>
           </div>
-          <% if(error){ %>
+          {% if error %}
             <div class="w3-cell-row w3-padding w3-sand">
-              <label class="w3-text-red"><b>&#9785; <%= error %></b></label>
+              <label class="w3-text-red"><b>&#9785; {{error}}</b></label>
             </div>
-          <% } %>
+          {% endif %}
         </form>
       </div>
     </div>
   </div>
 </div>
-<% } else { %>
-<iframe src = "<%= client_url %>" style="position: absolute; height: 70%; width: 100%; border: none" frameborder="0">
+{% else %}
+<iframe src = "{{client_url}}" style="position: absolute; height: 80%; width: 100%; border: none" frameborder="0">
   Sorry your browser does not support inline frames.
 </iframe>
-<% } %>
+{% endif %}
 
-<%- include('footer.html') -%>
+{% endblock %}

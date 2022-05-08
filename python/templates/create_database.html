@@ -1,4 +1,5 @@
-<%- include('header.html') -%>
+{% extends "base.html" %}
+{% block content %}
 <style>
   .results {
     word-break: break-all;
@@ -11,18 +12,19 @@
 </script>
 <div class="w3-sand w3-topbar w3-bottombar w3-border-gray" >
   <div class="w3-cell-row" >
-    <% Object.keys(env).map(key => { %>
+    {% for key in env %}
       <div class="w3-cell w3-left w3-padding-small w3-small">
-        <span class="w3-tag w3-light-grey w3-border"><b><%= key %></b></span>
-        <span class="w3-tag w3-white w3-border"><%= env[key] %></span>
+        <span class="w3-tag w3-light-grey w3-border"><b>{{key}}</b></span>
+        <span class="w3-tag w3-white w3-border">{{env[key]}}</span>
       </div>
-    <% }) %>
+    {% endfor %}
   </div>
 </div>
+
 <div class="w3-card w3-round w3-section" style="max-width: 800px;margin: auto;">
   <div class="w3-cell-row w3-dark-gray">
     <div class="w3-cell w3-padding">
-      <label><b><%= title %></b></label>
+      <label><b>{{title}}</b></label>
     </div>
   </div>
   <div class="w3-light-grey" style="padding: 8px 0px;">
@@ -33,23 +35,23 @@
             <div class="w3-cell w3-padding-small">
               <label><b>API-KEY</b></label>
               <input name="api_key" class="w3-input w3-border w3-round" 
-                type="text" value="<%= api_key %>" required>
+                type="text" value="{{api_key}}" required>
             </div>
           </div>
           <div class="w3-cell-row w3-padding-small">
             <div class="w3-cell w3-padding-small">
               <label><b>Alias name</b></label>
               <input name="alias" class="w3-input w3-border w3-round" 
-                type="text" value="<%= alias %>" required>
+                type="text" value="{{alias}}" required>
             </div>
           </div>
           <div class="w3-cell-row w3-padding-small">
             <div class="w3-cell w3-padding-small">
               <label><b>Demo database</b></label>
               <select class="w3-select w3-round" name="demo">
-                <% ['true','false'].map(value => { %>
-                  <option value="<%= value %>" <%= (demo === value) ? 'selected="selected"' :'' %> ><%= value.toUpperCase() %></option>
-                <% }) %>
+                {% for value in ['true','false'] %}
+                  <option value="{{value}}" {{ 'selected=selected' if demo == value else ''}} >{{value.upper()}}</option>
+                %{% endfor %}
               </select>
             </div>
           </div>
@@ -59,10 +61,10 @@
             </div>
             <div class="w3-cell w3-padding-small">
               <select class="w3-select w3-round" name="api_type">
-                <% ['cli','cgo','rpc','http'].map(value => { %>
-                  <option value="<%= value %>" <%= (api_type === value) ? 'selected="selected"' :'' %> ><%= value.toUpperCase() %></option>
-                <% }) %>
-              </select> 
+                {% for value in ['cli','cgo','rpc','http'] %}
+                  <option value="{{value}}" {{ 'selected=selected' if api_type == value else ''}} >{{value.upper()}}</option>
+                {% endfor %}
+              </select>
             </div>
             <div class="w3-cell w3-padding">
               <input type="submit" value="Create" 
@@ -70,30 +72,30 @@
               />
             </div>
           </div>
-          <% if(error){ %>
+          {% if error %}
             <div class="w3-cell-row w3-padding w3-sand">
-              <label class="w3-text-red"><b>&#9785; <%= error %></b></label>
+              <label class="w3-text-red"><b>&#9785; {{error}}</b></label>
             </div>
-          <% } %>
-          <% if(result){ %>
+          {% endif %}
+          {% if result %}
             <div class="w3-container w3-section" >
               <div class="results">
-              <% result.map(row => { %>
-                <div class="w3-padding-small w3-small w3-white">
-                  <div <%= (row.state === 'err') ? 'class="w3-text-red"' :'' %> ><%= row.stamp %></div>
-                  <span <%= (row.state === 'err') ? 'class="w3-text-red"' :'' %> ><%= row.message %></span>
-                  <span <%= (row.state === 'err') ? 'class="w3-text-red"' :'' %> ><%= row.section %></span>
-                  <span <%= (row.state === 'err') ? 'class="w3-text-red"' :'' %> ><%= row.datatype %></span>
-                  <div <%= (row.state === 'err') ? 'class="w3-text-red"' :'' %> ><%= row.result %></div>
+                {% for row in result %}
+                  <div class="w3-padding-small w3-small w3-white">
+                    <div {{'class="w3-text-red"' if row['state'] == 'err' else ''}} >{{row['stamp'] if 'stamp' in row else ''}}</div>
+                    <span {{'class="w3-text-red"' if row['state'] == 'err' else ''}} >{{row['message'] if 'message' in row else ''}}</span>
+                    <span {{'class="w3-text-red"' if row['state'] == 'err' else ''}} >{{row['section'] if 'section' in row else ''}}</span>
+                    <span {{'class="w3-text-red"' if row['state'] == 'err' else ''}} >{{row['datatype'] if 'datatype' in row else ''}}</span>
+                    <div {{'class="w3-text-red"' if row['state'] == 'err' else ''}} >{{row['result'] if 'result' in row else ''}}</div>
+                  </div>
+                {% endfor %}
                 </div>
-              <% }) %>
-              </div>
             </div>
-          <% } %>
+          {% endif %}
         </form>
       </div>
     </div>
   </div>
 </div>
 
-<%- include('footer.html') -%>
+{% endblock %}

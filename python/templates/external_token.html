@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="w3-sand w3-topbar w3-bottombar w3-border-gray" >
+  <div class="w3-cell-row" >
+    {% for key in env %}
+      <div class="w3-cell w3-left w3-padding-small w3-small">
+        <span class="w3-tag w3-light-grey w3-border"><b>{{key}}</b></span>
+        <span class="w3-tag w3-white w3-border">{{env[key]}}</span>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+<div class="w3-card w3-round w3-section" style="max-width: 800px;margin: auto;">
+  <div class="w3-cell-row w3-dark-gray">
+    <div class="w3-cell w3-padding">
+      <label><b>{{title}}</b></label>
+    </div>
+  </div>
+  <div class="w3-light-grey w3-padding ">
+    <p>
+      One option for allowing your users to login is by using an external identity provider  such as 
+      Facebook, GitHub, Google or Firebase. Once you successfully authenticate a user with an external 
+      provider, the service send an Access Token. You can retrieve and use this token to login to the 
+      Nervatura database.
+    </p>
+    <p>
+      The tokens may contain the following ID fields (known as claims):
+      <ul>
+        <li><b><i>sub, user_id:</i></b> An identifier for the user. Use sub within your 
+          application as the unique-identifier key for the user.</li>
+        <li><b><i>email:</i></b> The user's email address. This value may not be unique to 
+          this user and is not suitable for use as a primary key. Provided only if your scope 
+          included the email scope value.</li>
+      </ul>
+    </p>
+    <p>To match the username, Nervatura processing associates the token fields in the 
+      following order:<br />
+      login.<b><i>username</i></b> = token.<b><i>username</i></b> || token.<b><i>user_id</i></b> || 
+      token.<b><i>sub</i></b> || token.<b><i>email</i></b>
+    </p>
+    <p>
+      The user of the database is matched as follows:<br />
+      login.<b><i>username</i></b> = employee.<b><i>username</i></b> || employee.<b><i>registration_key</i></b>
+    </p>
+    <p>It is recommended that you set the value of the token sub in the registration key field of the employee 
+      form.</p>
+    <p>The token fields do not contain the name of the database. To specify this, set the 
+      <span class="w3-tag w3-white w3-border"><b>NT_ALIAS_DEFAULT</b></span> environment variable.</p>
+    <p>Grab the public key from <span class="w3-tag w3-white w3-border"><b>NT_TOKEN_PUBLIC_KEY_URL</b></span>. 
+      It will be used to verify the signature.</p>
+    <p><b><i>This procedure can only be used through the HTTP or gRPC API!</i></b></p>
+  </div>
+</div>
+
+{% endblock %}

@@ -22,6 +22,7 @@ if(!fs.existsSync(path.join(__dirname, ".env"))){
 app.set('views', path.join(__dirname, 'views'));
 app.engine('.html', require('ejs').__express);
 app.set('view engine', 'ejs');
+app.set("session", {})
 
 var utils = require('./lib/utils');
 

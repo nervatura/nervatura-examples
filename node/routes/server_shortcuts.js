@@ -15,7 +15,7 @@ var utils = require('../lib/utils');
 var shortcut_data = {
   username: "admin",
   database: "demo",
-  api_type: "http",
+  api_type: "cli",
   title: "Nervatura Client menu shortcuts",
   homepage_title: "External page - GET example",
   error: null, exists: null, homepage: null, client_url: "",
@@ -85,18 +85,13 @@ router.get('/', function (req, res) {
   checkFunctions(token, "cgo", function(result){
     var data = Object.assign({}, shortcut_data, { 
       exists: result, 
-      client_url: `http://localhost:${process.env.NT_HTTP_PORT}/client?#access_token=${token}` 
+      client_url: (result) ? `http://localhost:${process.env.NT_HTTP_PORT}/client?#access_token=${token}` : ""
     })
     res.render('server_shortcuts.html', data);
   })
 })
 
-function createShortcuts( params, createCallback) {
-  var token = utils.CreateToken({ 
-    username: params.username, database: params.database,
-    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
-    kid: process.env.NT_TOKEN_PRIVATE_KID
-  })
+function createShortcuts(token, params, createCallback) {
   async.waterfall([
     function(callback) {
       utils.GetApi(token, params.api_type, "Update", 
@@ -122,29 +117,28 @@ function createShortcuts( params, createCallback) {
 }
 
 router.post('/', function (req, res) {
-  var params = Object.assign({}, shortcut_data, {
-    api_type: req.body.api_type
-  })
   var token = utils.CreateToken({ 
     username: shortcut_data.username, database: shortcut_data.database,
     algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
     kid: process.env.NT_TOKEN_PRIVATE_KID
   })
+  var params = Object.assign({}, shortcut_data, {
+    api_type: req.body.api_type,
+    client_url: `http://localhost:${process.env.NT_HTTP_PORT}/client?#access_token=${token}`
+  })
   checkFunctions(token, req.body.api_type, function(result){
     if(!result){
-      return createShortcuts(params, function(err){
+      return createShortcuts(token, params, function(err){
         res.render('server_shortcuts.html', {
           ...params,
           error: (err) ? err : null,
           exists: (err) ? null : true,
-          client_url: `http://localhost:${process.env.NT_HTTP_PORT}/client?#access_token=${token}`
+          client_url: (err) ? "" : params.client_url
         });
       })
     }
     res.render('server_shortcuts.html', {
-      ...params,
-      error: null,
-      exists: true
+      ...params, error: null, exists: true,
     });
   })
   

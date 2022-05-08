@@ -11,7 +11,6 @@ var router = express.Router();
 
 var utils = require('../lib/utils');
 
-var sessions = {}
 var login_data = {
   username: "admin",
   database: "demo",
@@ -48,24 +47,19 @@ router.post('/redirect', function(req, res) {
   })
   if(req.body.response_type === "code") {
     var code = utils.Guid()
-    sessions[code] = {
-      token: token
-    }
-    url += `?code=${code}&callback=http://${process.env.NT_EXAMPLE_HOST}:${process.env.NT_EXAMPLE_PORT}/client_login/token&error=http://${process.env.NT_EXAMPLE_HOST}:${process.env.NT_EXAMPLE_PORT}/client_login`
+    req.app.get("session")[code] = token
+    url += `?#code=${code}&callback=http://${process.env.NT_EXAMPLE_HOST}:${process.env.NT_EXAMPLE_PORT}/client_login/token&error=http://${process.env.NT_EXAMPLE_HOST}:${process.env.NT_EXAMPLE_PORT}/client_login`
   } else {
-    url += `?#access_token=${token}&token_type=Bearer&expires_in=${process.env.NT_EXAMPLE_TOKEN_EXP}&callback=http://${process.env.NT_EXAMPLE_HOST}:${process.env.NT_EXAMPLE_PORT}/client_login`
-  }
-  if (req.body.path && (req.body.path !== "")) {
-    url += "&path="+req.body.path
+    url += `?#access_token=${token}&callback=http://${process.env.NT_EXAMPLE_HOST}:${process.env.NT_EXAMPLE_PORT}/client_login`
   }
   res.redirect(url)
 });
 
 router.post('/token', function(req, res) {
   res.set('Content-Type', 'application/json');
-  if(req.body.code && Object.keys(sessions).includes(req.body.code)){
+  if(req.body.code && Object.keys(req.app.get("session")).includes(req.body.code)){
     res.status(200).send({
-      access_token: sessions[req.body.code].token,
+      access_token: req.app.get("session")[req.body.code],
       token_type: "bearer",
       expires_in: process.env.NT_EXAMPLE_TOKEN_EXP,
       callback: `http://${process.env.NT_EXAMPLE_HOST}:${process.env.NT_EXAMPLE_PORT}/client_login`

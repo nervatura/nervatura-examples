@@ -15,7 +15,7 @@ var login_data = {
   api_key: process.env.NT_API_KEY,
   alias: "demo",
   demo: "true",
-  api_type: "http",
+  api_type: "cli",
   title: "Create a demo database",
   error: null, result: null,
   env: {

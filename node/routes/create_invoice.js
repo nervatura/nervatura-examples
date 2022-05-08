@@ -12,11 +12,10 @@ var async = require("async");
 
 var utils = require('../lib/utils');
 
-var token = ""
 var invoice_data = {
   username: "admin",
   database: "demo",
-  api_type: "http",
+  api_type: "cli",
   title: "Create a customer invoice",
   error: null, result: null,
   env: {
@@ -92,12 +91,7 @@ router.get('/', function (req, res) {
   res.render('create_invoice.html', invoice_data);
 })
 
-function createInvoice( params, createCallback) {
-  token = utils.CreateToken({ 
-    username: params.username, database: params.database,
-    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
-    kid: process.env.NT_TOKEN_PRIVATE_KID
-  })
+function createInvoice(token, params, createCallback) {
   async.waterfall([
     function(callback) {
       var views = [
@@ -129,6 +123,7 @@ function createInvoice( params, createCallback) {
     function(views, callback) {
       if(params.data.customer){
         if(parseInt(views.customer[0].anum,10) > 0){
+          //existing customer
           params.data.customer.keys.id = params.data.customer.custnumber
         }
         utils.GetApi(token, params.api_type, "Update", 
@@ -145,10 +140,12 @@ function createInvoice( params, createCallback) {
     function(views, callback) {
       if(params.data.address){
         if(parseInt(views.address[0].anum,10) > 0){
+          // existing address
           params.data.address[0].keys = {
             id: "customer/"+params.data.customer.custnumber+"~1"
           }
         } else {
+          // new address data
           params.data.address[0].keys = {
             nervatype: "customer",
             ref_id: "customer/"+params.data.customer.custnumber
@@ -168,10 +165,12 @@ function createInvoice( params, createCallback) {
     function(views, callback) {
       if(params.data.contact){
         if(parseInt(views.contact[0].anum,10) > 0){
+          // existing contact
           params.data.contact[0].keys = {
             id: "customer/"+params.data.customer.custnumber+"~1"
           }
         } else {
+          // new contact data
           params.data.contact[0].keys = {
             nervatype: "customer",
             ref_id: "customer/"+params.data.customer.custnumber
@@ -229,7 +228,13 @@ router.post('/', function (req, res) {
   const params = Object.assign({}, invoice_data, {
     username: req.body.username, database: req.body.database, api_type: req.body.api_type
   })
-  createInvoice(params, function(err, trans_id){
+  token = utils.CreateToken({ 
+    username: params.username, database: params.database,
+    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
+    kid: process.env.NT_TOKEN_PRIVATE_KID
+  })
+  req.app.get("session")["invoice_token"] = token
+  createInvoice(token, params, function(err, trans_id){
     return res.render('create_invoice.html', {
       ...params,
       error: (err) ? err : null,
@@ -251,7 +256,7 @@ router.get('/report/*', function (req, res) {
       "@id": trans_id
     }
   }
-  utils.GetApi(token, api_type, "Report", params, function(err, data){
+  utils.GetApi(req.app.get("session")["invoice_token"], api_type, "Report", params, function(err, data){
     if(err){
       return res.render('create_invoice.html', {
         ...invoice_data,

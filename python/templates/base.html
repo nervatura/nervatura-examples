@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title><%= title %></title>
+    <title>{{title}}</title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <style>
         body { 
           color: #444444;
           background-color: gainsboro;
-          font-size: 15px;
+          font-size: 14px;
         }
         select {
           background-color: white;
@@ -67,3 +67,6 @@
         <div class="loader" ></div>
       </div>
     </div>
+    {% block content %}{% endblock %}
+  </body>
+</html>
