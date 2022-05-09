@@ -50,7 +50,7 @@ templates = Jinja2Templates(directory="templates")
 async def home(request: Request):
   demo_db = os.path.exists(os.path.join("data","demo.db"))
   return templates.TemplateResponse("index.html", {
-    "request": request, "demo_db": demo_db, "title": "Nervatura examples"})
+    "request": request, "demo": demo_db, "title": "Nervatura examples"})
 
 if __name__ == "__main__":
   uvicorn.run("main:app",
