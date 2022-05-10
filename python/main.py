@@ -17,7 +17,6 @@ from routers import client_login, create_database, password_login, token_login
 from routers import external_token, client_config, create_invoice, server_shortcuts, csv_report
 
 from dotenv import load_dotenv
-load_dotenv()
 if os.path.exists(".env"):
   load_dotenv()
 else:
