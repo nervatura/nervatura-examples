@@ -27,8 +27,10 @@ def checkJson(data):
     return data
   return jdata
 
-def servicePath(): 
-  return os.getenv("NT_EXAMPLE_SERVICE_PATH")
+def servicePath():
+  if os.getenv("NT_EXAMPLE_SERVICE_PATH") == "docker":
+    return ["docker", "exec", "-i", "nervatura", "/nervatura"] 
+  return [os.getenv("NT_EXAMPLE_SERVICE_PATH")]
 
 def CreateToken(params):
   privateKEY = getKey()

@@ -21,7 +21,7 @@ templates = Jinja2Templates(directory="templates")
 shortcut_data = {
   "username": "admin",
   "database": "demo",
-  "api_type": "cli",
+  "api_type": os.getenv("NT_EXAMPLE_DEFAULT_API"),
   "title": "Nervatura Client menu shortcuts",
   "homepage_title": "External page - GET example",
   "error": False, "exists": False, "homepage": False, "client_url": "",
@@ -194,7 +194,7 @@ async def email(options: Dict[Any, Any]):
       }
     }
   }
-  result = getApi("cgo", "Function")(token, params)
+  result = getApi(shortcut_data["api_type"], "Function")(token, params)
   if result[1] is not None:
     return JSONResponse(
       content={"code":400, "error": { "message": result[1] }}, status_code=400)

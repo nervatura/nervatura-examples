@@ -21,7 +21,7 @@ login_data = {
   "username": "admin",
   "password": "",
   "database": "demo",
-  "api_type": "cli",
+  "api_type": os.getenv("NT_EXAMPLE_DEFAULT_API"),
   "title": "Basic password login",
   "error": False, "result": False,
   "env": {

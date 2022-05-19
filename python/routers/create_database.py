@@ -20,7 +20,7 @@ login_data = {
   "api_key": os.getenv("NT_API_KEY"),
   "alias": "demo",
   "demo": "true",
-  "api_type": "cli",
+  "api_type": os.getenv("NT_EXAMPLE_DEFAULT_API"),
   "title": "Create a demo database",
   "error": False, "result": False,
   "env": {

@@ -20,7 +20,7 @@ templates = Jinja2Templates(directory="templates")
 login_data = {
   "username": "admin",
   "database": "demo",
-  "api_type": "cli",
+  "api_type": os.getenv("NT_EXAMPLE_DEFAULT_API"),
   "title": "Custom token (passwordless) login - public/private key pair",
   "error": False, "result": False,
   "env": {

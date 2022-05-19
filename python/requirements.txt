@@ -5,4 +5,4 @@ pyjwt
 jinja2
 python-multipart
 grpcio-tools
-nervatura==5.0.4
+nervatura==5.0.5

@@ -1,0 +1,71 @@
+{{define "content"}}
+
+<script>
+  function onSubmit(){
+    return(showLoader(true));
+  }
+</script>
+<div class="w3-sand w3-topbar w3-bottombar w3-border-gray" >
+  <div class="w3-cell-row" >
+    {{range $key, $value := .env}}
+      <div class="w3-cell w3-left w3-padding-small w3-small">
+        <span class="w3-tag w3-light-grey w3-border"><b>{{$key}}</b></span>
+        <span class="w3-tag w3-white w3-border">{{$value}}</span>
+      </div>
+    {{end}}
+  </div>
+</div>
+<div class="w3-card w3-round w3-section" style="max-width: 400px;margin: auto;">
+  <div class="w3-cell-row w3-dark-gray">
+    <div class="w3-cell w3-padding">
+      <label><b>{{.title}}</b></label>
+    </div>
+  </div>
+  <div class="w3-light-grey" style="padding: 8px 0px;">
+    <div class="w3-cell-row">
+      <div class="w3-cell">
+        <form action="/client_login" method="post" onsubmit="onSubmit();" >
+          <div class="w3-cell-row w3-padding-small">
+            <div class="w3-cell w3-padding-small">
+              <label><b>username</b></label>
+              <input name="username" class="w3-input w3-border w3-round" 
+                type="text" value="{{.username}}" required>
+            </div>
+          </div>
+          <div class="w3-cell-row w3-padding-small">
+            <div class="w3-cell w3-padding-small">
+              <label><b>database</b></label>
+              <input name="database" class="w3-input w3-border w3-round" 
+                type="text" value="{{.database}}" required>
+            </div>
+          </div>
+          {{if .error}}
+            <div class="w3-cell-row w3-padding w3-sand">
+              <label class="w3-text-red"><b>&#9785; {{.error}}</b></label>
+            </div>
+          {{end}}
+          <div class="w3-cell-row w3-padding-small w3-border-top">
+            <div class="w3-cell w3-padding-small" style="width: 110px;">
+              <label class="w3-text-blue"><b>response type</b></label>
+            </div>
+            <div class="w3-cell w3-padding-small">
+              <select class="w3-select w3-round" name="response_type">
+                <option value="code" {{if eq .response_type "code" }} selected {{end}} >Authorization Code</option>
+                <option value="token" {{if eq .response_type "token" }} selected {{end}} >Implicit (token) Grant</option>
+              </select> 
+            </div>
+          </div>
+          <div class="w3-cell-row">
+            <div class="w3-cell w3-padding w3-center">
+              <input type="submit" value="Login" 
+                class="w3-button w3-black w3-round" style="font-weight: bold;" 
+              />
+            </div>
+          </div>  
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{end}}

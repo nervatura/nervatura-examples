@@ -44,6 +44,15 @@ exports.EncodeOptions = function(data) {
   return JSON.stringify(data)
 }
 
+exports.ToBytes = (string) => {
+	const buffer = Buffer.from(string, 'utf8');
+	const result = Array(buffer.length);
+	for (var i = 0; i < buffer.length; i++) {
+		result[i] = buffer[i];
+	}
+	return result;
+};
+
 exports.CreateToken = function(params) {
   var _token = { 
     iss: process.env.NT_TOKEN_ISS, 

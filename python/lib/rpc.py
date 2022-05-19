@@ -6,10 +6,13 @@ License: LGPLv3
 https://raw.githubusercontent.com/nervatura/nervatura/master/LICENSE 
 """
 
+from email import utils
 import os
 import grpc
 from nervatura import api_pb2 as pb, api_pb2_grpc as api
 import json
+
+import lib.utils as utils
 
 def client():
     channel = grpc.insecure_channel("localhost:"+os.getenv("NT_GRPC_PORT"))
@@ -42,6 +45,12 @@ def mapValue(values):
     for key in dict(values).keys():
         item[key] = encodeValue(values[key])
     return item
+
+def checkValue(values):
+    for value in dict(values).values():
+        if type(value) != bool and type(value) not in(int, float) and type(value) != list and type(value) != str:
+            return False
+    return True
 
 def DatabaseCreate(apiKey, options):
     metadata = [("x-api-key", apiKey)]
@@ -186,10 +195,16 @@ def ReportDelete(token, options):
 
 def Function(token, options):
     metadata = [("authorization", "Bearer "+token)]
+    value, values = None, None
+    if "values" in options:
+        if checkValue(options["values"]):
+            values=mapValue(options["values"])
+        else:
+            value=utils.encodeOptions(options["values"])
     try:
         response = client().Function(pb.RequestFunction(
             key=options["key"],
-            values=mapValue(options["values"])
+            values=values, value=value
         ), metadata=metadata)
     except grpc.RpcError as err:
         return [None, err.details()]

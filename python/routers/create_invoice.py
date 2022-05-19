@@ -22,7 +22,7 @@ templates = Jinja2Templates(directory="templates")
 invoice_data = {
   "username": "admin",
   "database": "demo",
-  "api_type": "cli",
+  "api_type": os.getenv("NT_EXAMPLE_DEFAULT_API"),
   "title": "Create a customer invoice",
   "error": False, "result": False,
   "env": {
@@ -247,7 +247,10 @@ async def report(
     content=base64.urlsafe_b64decode(content)
     return Response(
       content=content, status_code=200, media_type="application/pdf", 
-      headers={"Content-Disposition": "attachment; filename=Invoice_"+str(trans_id)+".pdf"}
+      headers={
+        "Content-Type": "application/pdf",
+        "Content-Disposition": "attachment; filename=Invoice_"+str(trans_id)+".pdf"
+      }
     )
 
   data = invoice_data | html_data | { 

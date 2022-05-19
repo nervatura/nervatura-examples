@@ -1,0 +1,16 @@
+{{define "content"}}
+<div class="w3-sand w3-topbar w3-bottombar w3-border-gray" >
+  <div class="w3-cell-row" >
+    {{range $key, $value := .env}}
+      <div class="w3-cell w3-left w3-padding-small w3-small">
+        <span class="w3-tag w3-light-grey w3-border"><b>{{$key}}</b></span>
+        <span class="w3-tag w3-white w3-border">{{$value}}</span>
+      </div>
+    {{end}}
+  </div>
+</div>
+<iframe src = "{{.client_url}}" style="position: absolute; height: 90%; width: 100%; border: none" frameborder="0">
+  Sorry your browser does not support inline frames.
+</iframe>
+
+{{end}}

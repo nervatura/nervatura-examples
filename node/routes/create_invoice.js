@@ -15,7 +15,7 @@ var utils = require('../lib/utils');
 var invoice_data = {
   username: "admin",
   database: "demo",
-  api_type: "cli",
+  api_type: process.env.NT_EXAMPLE_DEFAULT_API,
   title: "Create a customer invoice",
   error: null, result: null,
   env: {
@@ -281,7 +281,7 @@ router.get('/report/*', function (req, res) {
     }
 
     res.setHeader('Content-Disposition', `attachment; filename=Invoice_${trans_id}.pdf`);
-    res.set('Content-Type', 'application/pdf');
+    res.setHeader('Content-Type', 'application/pdf');
     result = Buffer.from(result.substring(result.indexOf(";base64,")+8), 'base64')
     res.status(200).send(result)
   })

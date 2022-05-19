@@ -18,7 +18,7 @@ var login_data = {
   username: "admin",
   password: "",
   database: "demo",
-  api_type: "cli",
+  api_type: process.env.NT_EXAMPLE_DEFAULT_API,
   title: "Basic password login",
   error: null, result: null,
   env: {

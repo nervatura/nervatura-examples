@@ -21,6 +21,7 @@ if os.path.exists(".env"):
   load_dotenv()
 else:
   load_dotenv(dotenv_path=".env.example")
+os.environ["NT_ALIAS_DEMO"] = "sqlite://file:"+os.path.abspath(os.getcwd())+"/data/demo.db?cache=shared&mode=rwc"
 
 app = FastAPI()
 

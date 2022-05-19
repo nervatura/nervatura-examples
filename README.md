@@ -1,8 +1,12 @@
 # Nervatura Examples
 
-## Quick Start
+## **Quick Start**
 
-### Node.js
+### **Node.js and NPM**
+
+Recommended API: 
+- gRPC 
+- CGO (Linux and Windows x64)
 
 ```
 $ git clone https://github.com/nervatura/nervatura-examples.git
@@ -12,7 +16,13 @@ $ npm start
 ```
 Open your browser to http://localhost:8080
 
-### Python
+You do not need a Nervatura backend server to use the CLI and CGO. Automatic server start can be turned off with `NT_EXAMPLE_SERVICE_DISABLED=true`  (see in the `nervatura-examples/node/.env` file).
+
+### **Python and Snap or prebuild binaries**
+
+Recommended API:  
+- CGO (Linux and Windows x64)
+- gRPC
 
 1. Download the Python examples
 
@@ -24,29 +34,48 @@ Open your browser to http://localhost:8080
     ```
     Open your browser to http://localhost:8000
 
-2. Download the Nervatura
+2. Nervatura backend
 
-  - Linux x64
+  - Linux
     ```
-    $ mkdir bin
-    $ cd bin
-    $ curl -L -s https://api.github.com/repos/nervatura/nervatura/releases/latest | grep -o -E "https://(.*)nervatura_(.*)_linux_amd64.tar.gz" | wget -qi -
-    $ tar -zxf *.gz
-    $ rm *.gz
+    $ sudo snap install nervatura
+    ```
+    The CLI and CGO is ready to use. To use the gRPC and HTTP, start Nervatura service with the .env.example settings (`nervatura-examples/python` directory):
+    ```
+    $ /snap/nervatura/current/nervatura -env $(pwd)/.env.example
     ```
 
   - Windows users:
-    - download the [latest version](https://github.com/nervatura/nervatura/releases/latest) to the `/bin` directory
-    - change the value of the `NT_EXAMPLE_SERVICE_PATH` (`.env.example` file): "bin/nervatura" -> "bin/nervatura.exe"
-    - change the value of the `NT_EXAMPLE_SERVICE_LIB` (`.env.example` file): "bin/nervatura.so" -> "bin/nervatura.dll"
+    - download the [latest version](https://github.com/nervatura/nervatura/releases/latest) to the `nervatura-examples/python/bin` directory
+    - change the value of the `NT_EXAMPLE_SERVICE_PATH` (`nervatura-examples/python/.env.example` file): "/snap/nervatura/current/nervatura" -> "bin/nervatura.exe"
+    - change the value of the `NT_EXAMPLE_SERVICE_LIB` (`nervatura-examples/python/.env.example` file): "/snap/nervatura/current/nervatura.so" -> "bin/nervatura.dll"
 
-3. Start the Nervatura backend server (gRPC and HTTP examples)
+    Start the Nervatura backend server (gRPC and HTTP examples)
 
     ```
       $ bin/nervatura -env .env.example
     ```
+### **Go and Docker**
 
-## Examples
+Recommended API:
+- gRPC
+
+1. Download the Go examples
+
+    ```
+    $ git clone https://github.com/nervatura/nervatura-examples.git
+    $ cd nervatura-examples/go
+    $ go mod vendor
+    $ go run ./main.go
+    ```
+    Open your browser to http://localhost:7000
+
+2. Nervatura backend (`nervatura-examples/go` directory)
+    ```
+    $ docker run -i -t --rm --name nervatura --env-file .env.example -p 5000:5000 -p 9200:9200 -v $(pwd)/data:/data nervatura/nervatura:latest
+    ```
+
+## **Examples**
 
 - Create a demo database - **All examples require a demo database. Please run this first!**
 - Basic password login

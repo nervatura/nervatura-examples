@@ -64,7 +64,7 @@ report_data = {
 example_data = {
   "username": "admin",
   "database": "demo",
-  "api_type": "cli",
+  "api_type": os.getenv("NT_EXAMPLE_DEFAULT_API"),
   "title": "CSV Report Example",
   "error": False, "exists": False, "client_url": "",
   "env": {

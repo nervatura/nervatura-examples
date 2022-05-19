@@ -6,9 +6,12 @@ License: LGPLv3
 https://raw.githubusercontent.com/nervatura/nervatura/master/LICENSE
 */
 
+var utils = require('./utils');
+
 var path = require('path');
 const protoLoader = require('@grpc/proto-loader');
 const grpc = require('@grpc/grpc-js');
+const { forEach } = require('async');
 
 const protoPath = path.join("node_modules","nervatura","bin","proto","api.proto")
 
@@ -38,6 +41,8 @@ function encodeValue(value) {
     return { boolean: value, value: "boolean" }
   } else if(typeof value === 'number'){
     return { number: value, value: "number" }
+  } else if((typeof value === 'object') && Array.isArray(value)){
+    return { text: value.join(","), value: "text" }
   } else {
     return { text: String(value), value: "text" }
   }
@@ -194,11 +199,22 @@ exports.View = function(token, options, callback) {
 }
 
 exports.Function = function(token, options, callback) {
+  function checkValue(prmValues){
+    return (Object.values(prmValues).filter(value => (
+      (typeof(value) !== "boolean") && (typeof(value) !== "number") 
+      && (!Array.isArray(value)) && (typeof(value) !== "string")
+    )).length === 0)
+  }
   var meta = new grpc.Metadata();
   meta.add('Authorization', `Bearer ${token}`);
+  var rcpValues, rcpValue
+  if(checkValue(options.values||{})){
+    rcpValues = mapValue(options.values)
+  } else {
+    rcpValue = utils.ToBytes(utils.EncodeOptions(options.values))
+  }
   var rpcOptions = {
-    key: options.key,
-    values: (options.values) ? mapValue(options.values) : {}
+    key: options.key, values: rcpValues, value: rcpValue
   }
   rpcClient("Function", meta, rpcOptions, function(err, data){
     if(err !== null){

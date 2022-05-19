@@ -13,10 +13,10 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 
 var app = express();
-require('dotenv').config()
 if(!fs.existsSync(path.join(__dirname, ".env"))){
-  require('dotenv').config({ path: path.join(__dirname, ".env.example") })
+  fs.copyFileSync(path.join(__dirname, ".env.example"),path.join(__dirname, ".env"))
 }
+require('dotenv').config()
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

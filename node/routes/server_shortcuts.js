@@ -15,7 +15,7 @@ var utils = require('../lib/utils');
 var shortcut_data = {
   username: "admin",
   database: "demo",
-  api_type: "cli",
+  api_type: process.env.NT_EXAMPLE_DEFAULT_API,
   title: "Nervatura Client menu shortcuts",
   homepage_title: "External page - GET example",
   error: null, exists: null, homepage: null, client_url: "",
@@ -82,7 +82,7 @@ router.get('/', function (req, res) {
     algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
     kid: process.env.NT_TOKEN_PRIVATE_KID
   })
-  checkFunctions(token, "cgo", function(result){
+  checkFunctions(token, shortcut_data.api_type, function(result){
     var data = Object.assign({}, shortcut_data, { 
       exists: result, 
       client_url: (result) ? `http://localhost:${process.env.NT_HTTP_PORT}/client?#access_token=${token}` : ""
@@ -202,7 +202,7 @@ router.post('/email', function (req, res) {
       }
     }
   }
-  utils.GetApi(token, "cgo", "Function", options, function(err, result){
+  utils.GetApi(token, shortcut_data.api_type, "Function", options, function(err, result){
     send(err, "The message was successfully sent")  
   })
   

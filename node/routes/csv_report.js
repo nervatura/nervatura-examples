@@ -57,7 +57,7 @@ var report_data = {
 var example_data = {
   username: "admin",
   database: "demo",
-  api_type: "cli",
+  api_type: process.env.NT_EXAMPLE_DEFAULT_API,
   title: "CSV Report Example",
   error: null, exists: null, client_url: "",
   env: {
@@ -107,7 +107,7 @@ router.get('/', function (req, res) {
     algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
     kid: process.env.NT_TOKEN_PRIVATE_KID
   })
-  checkFunctions(token, "cgo", function(result){
+  checkFunctions(token, example_data.api_type, function(result){
     var data = Object.assign({}, example_data, { 
       exists: result, 
       client_url: `http://localhost:${process.env.NT_HTTP_PORT}/client?#access_token=${token}` 
