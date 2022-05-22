@@ -15,15 +15,15 @@ var login_data = {
   username: "admin",
   database: "demo",
   response_type: "code",
-  title: "Nervatura Client custom token login - with the HMAC algorithm",
+  title: "Nervatura Client custom token login",
   error: null,
   env: {
     NT_EXAMPLE_TOKEN_PRIVATE_KEY: process.env.NT_EXAMPLE_TOKEN_PRIVATE_KEY,
     NT_EXAMPLE_TOKEN_EXP: process.env.NT_EXAMPLE_TOKEN_EXP,
-    NT_EXAMPLE_TOKEN_ALGORITHM_HMAC: process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
+    NT_EXAMPLE_TOKEN_ALGORITHM: process.env.NT_EXAMPLE_TOKEN_ALGORITHM,
     NT_TOKEN_ISS: process.env.NT_TOKEN_ISS,
-    NT_TOKEN_PRIVATE_KID: process.env.NT_TOKEN_PRIVATE_KID,
-    NT_TOKEN_PRIVATE_KEY: process.env.NT_TOKEN_PRIVATE_KEY,
+    NT_TOKEN_PUBLIC_KID: process.env.NT_TOKEN_PUBLIC_KID,
+    NT_TOKEN_PUBLIC_KEY: process.env.NT_TOKEN_PUBLIC_KEY,
     NT_ALIAS_DEMO: process.env.NT_ALIAS_DEMO,
   }
 }
@@ -42,8 +42,8 @@ router.post('/redirect', function(req, res) {
   var url = `http://localhost:${process.env.NT_HTTP_PORT}/client`
   var token = utils.CreateToken({ 
     username: req.body.username, database: req.body.database,
-    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
-    kid: process.env.NT_TOKEN_PRIVATE_KID
+    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM,
+    kid: process.env.NT_TOKEN_PUBLIC_KID
   })
   if(req.body.response_type === "code") {
     var code = utils.Guid()

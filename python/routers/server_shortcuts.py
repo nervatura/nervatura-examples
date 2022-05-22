@@ -28,10 +28,10 @@ shortcut_data = {
   "env": {
     "NT_EXAMPLE_TOKEN_PRIVATE_KEY": os.getenv("NT_EXAMPLE_TOKEN_PRIVATE_KEY"),
     "NT_EXAMPLE_TOKEN_EXP": os.getenv("NT_EXAMPLE_TOKEN_EXP"),
-    "NT_EXAMPLE_TOKEN_ALGORITHM_HMAC": os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM_HMAC"),
+    "NT_EXAMPLE_TOKEN_ALGORITHM": os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM"),
     "NT_TOKEN_ISS": os.getenv("NT_TOKEN_ISS"),
-    "NT_TOKEN_PRIVATE_KID": os.getenv("NT_TOKEN_PRIVATE_KID"),
-    "NT_TOKEN_PRIVATE_KEY": os.getenv("NT_TOKEN_PRIVATE_KEY"),
+    "NT_TOKEN_PUBLIC_KID": os.getenv("NT_TOKEN_PUBLIC_KID"),
+    "NT_TOKEN_PUBLIC_KEY": os.getenv("NT_TOKEN_PUBLIC_KEY"),
     "NT_ALIAS_DEMO": os.getenv("NT_ALIAS_DEMO"),
     "NT_SMTP_HOST": os.getenv("NT_SMTP_HOST"),
     "NT_SMTP_PORT": os.getenv("NT_SMTP_PORT"),
@@ -90,8 +90,8 @@ def checkFunctions(token, api_type):
 async def index(request: Request):
   token = utils.CreateToken({ 
     "username": shortcut_data["username"], "database": shortcut_data["database"],
-    "algorithm":  os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM_HMAC"),
-    "kid": os.getenv("NT_TOKEN_PRIVATE_KID")
+    "algorithm":  os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM"),
+    "kid": os.getenv("NT_TOKEN_PUBLIC_KID")
   })
   exists = checkFunctions(token, shortcut_data["api_type"])
   data = shortcut_data | html_data | { 
@@ -118,8 +118,8 @@ async def login(
 ):
   token = utils.CreateToken({ 
     "username": username, "database": database,
-    "algorithm":  os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM_HMAC"),
-    "kid": os.getenv("NT_TOKEN_PRIVATE_KID")
+    "algorithm":  os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM"),
+    "kid": os.getenv("NT_TOKEN_PUBLIC_KID")
   })
   data = shortcut_data | {
     "api_type": api_type, "request": request,
@@ -172,8 +172,8 @@ async def email(options: Dict[Any, Any]):
   
   token = utils.CreateToken({ 
     "username": shortcut_data["username"], "database": shortcut_data["database"],
-    "algorithm":  os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM_HMAC"),
-    "kid": os.getenv("NT_TOKEN_PRIVATE_KID")
+    "algorithm":  os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM"),
+    "kid": os.getenv("NT_TOKEN_PUBLIC_KID")
   })
   params = { 
     "key": "sendEmail", 

@@ -22,10 +22,10 @@ var shortcut_data = {
   env: {
     NT_EXAMPLE_TOKEN_PRIVATE_KEY: process.env.NT_EXAMPLE_TOKEN_PRIVATE_KEY,
     NT_EXAMPLE_TOKEN_EXP: process.env.NT_EXAMPLE_TOKEN_EXP,
-    NT_EXAMPLE_TOKEN_ALGORITHM_HMAC: process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
+    NT_EXAMPLE_TOKEN_ALGORITHM: process.env.NT_EXAMPLE_TOKEN_ALGORITHM,
     NT_TOKEN_ISS: process.env.NT_TOKEN_ISS,
-    NT_TOKEN_PRIVATE_KID: process.env.NT_TOKEN_PRIVATE_KID,
-    NT_TOKEN_PRIVATE_KEY: process.env.NT_TOKEN_PRIVATE_KEY,
+    NT_TOKEN_PUBLIC_KID: process.env.NT_TOKEN_PUBLIC_KID,
+    NT_TOKEN_PUBLIC_KEY: process.env.NT_TOKEN_PUBLIC_KEY,
     NT_ALIAS_DEMO: process.env.NT_ALIAS_DEMO,
     NT_SMTP_HOST: process.env.NT_SMTP_HOST,
     NT_SMTP_PORT: process.env.NT_SMTP_PORT,
@@ -79,8 +79,8 @@ function checkFunctions(token, api_type, callback) {
 router.get('/', function (req, res) {
   var token = utils.CreateToken({ 
     username: shortcut_data.username, database: shortcut_data.database,
-    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
-    kid: process.env.NT_TOKEN_PRIVATE_KID
+    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM,
+    kid: process.env.NT_TOKEN_PUBLIC_KID
   })
   checkFunctions(token, shortcut_data.api_type, function(result){
     var data = Object.assign({}, shortcut_data, { 
@@ -119,8 +119,8 @@ function createShortcuts(token, params, createCallback) {
 router.post('/', function (req, res) {
   var token = utils.CreateToken({ 
     username: shortcut_data.username, database: shortcut_data.database,
-    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
-    kid: process.env.NT_TOKEN_PRIVATE_KID
+    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM,
+    kid: process.env.NT_TOKEN_PUBLIC_KID
   })
   var params = Object.assign({}, shortcut_data, {
     api_type: req.body.api_type,
@@ -180,8 +180,8 @@ router.post('/email', function (req, res) {
 
   var token = utils.CreateToken({ 
     username: shortcut_data.username, database: shortcut_data.database,
-    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
-    kid: process.env.NT_TOKEN_PRIVATE_KID
+    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM,
+    kid: process.env.NT_TOKEN_PUBLIC_KID
   })
   var options = { 
     key: "sendEmail", 

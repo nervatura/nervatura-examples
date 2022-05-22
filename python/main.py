@@ -13,15 +13,15 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 
-from routers import client_login, create_database, password_login, token_login
-from routers import external_token, client_config, create_invoice, server_shortcuts, csv_report
-
 from dotenv import load_dotenv
 if os.path.exists(".env"):
   load_dotenv()
 else:
   load_dotenv(dotenv_path=".env.example")
 os.environ["NT_ALIAS_DEMO"] = "sqlite://file:"+os.path.abspath(os.getcwd())+"/data/demo.db?cache=shared&mode=rwc"
+
+from routers import client_login, create_database, password_login, token_login
+from routers import external_token, client_config, create_invoice, server_shortcuts, csv_report
 
 app = FastAPI()
 

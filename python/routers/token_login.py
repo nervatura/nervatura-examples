@@ -21,12 +21,12 @@ login_data = {
   "username": "admin",
   "database": "demo",
   "api_type": os.getenv("NT_EXAMPLE_DEFAULT_API"),
-  "title": "Custom token (passwordless) login - public/private key pair",
+  "title": "Custom token (passwordless) login",
   "error": False, "result": False,
   "env": {
     "NT_EXAMPLE_TOKEN_PRIVATE_KEY": os.getenv("NT_EXAMPLE_TOKEN_PRIVATE_KEY"),
     "NT_EXAMPLE_TOKEN_EXP": os.getenv("NT_EXAMPLE_TOKEN_EXP"),
-    "NT_EXAMPLE_TOKEN_ALGORITHM_RSA": os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM_RSA"),
+    "NT_EXAMPLE_TOKEN_ALGORITHM": os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM"),
     "NT_TOKEN_ISS": os.getenv("NT_TOKEN_ISS"),
     "NT_TOKEN_PUBLIC_KID": os.getenv("NT_TOKEN_PUBLIC_KID"),
     "NT_TOKEN_PUBLIC_KEY": os.getenv("NT_TOKEN_PUBLIC_KEY"),
@@ -48,7 +48,7 @@ async def login(
 ):
   token = utils.CreateToken({ 
     "username": username, "database": database,
-    "algorithm":  os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM_RSA"),
+    "algorithm":  os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM"),
     "kid": os.getenv("NT_TOKEN_PUBLIC_KID")
   })
   func_name = "TokenValidate" if api_type == "http" else "TokenLogin"

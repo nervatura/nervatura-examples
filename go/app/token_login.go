@@ -16,13 +16,13 @@ func (app *App) tokenLogin(w http.ResponseWriter, r *http.Request) {
 		"error":    nil, "result": nil,
 		"api": []string{"cli", "rpc", "http"},
 		"env": map[string]interface{}{
-			"NT_EXAMPLE_TOKEN_PRIVATE_KEY":   os.Getenv("NT_EXAMPLE_TOKEN_PRIVATE_KEY"),
-			"NT_EXAMPLE_TOKEN_EXP":           os.Getenv("NT_EXAMPLE_TOKEN_EXP"),
-			"NT_EXAMPLE_TOKEN_ALGORITHM_RSA": os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM_RSA"),
-			"NT_TOKEN_ISS":                   os.Getenv("NT_TOKEN_ISS"),
-			"NT_TOKEN_PUBLIC_KID":            os.Getenv("NT_TOKEN_PUBLIC_KID"),
-			"NT_TOKEN_PUBLIC_KEY":            os.Getenv("NT_TOKEN_PUBLIC_KEY"),
-			"NT_ALIAS_DEMO":                  os.Getenv("NT_ALIAS_DEMO"),
+			"NT_EXAMPLE_TOKEN_PRIVATE_KEY": os.Getenv("NT_EXAMPLE_TOKEN_PRIVATE_KEY"),
+			"NT_EXAMPLE_TOKEN_EXP":         os.Getenv("NT_EXAMPLE_TOKEN_EXP"),
+			"NT_EXAMPLE_TOKEN_ALGORITHM":   os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM"),
+			"NT_TOKEN_ISS":                 os.Getenv("NT_TOKEN_ISS"),
+			"NT_TOKEN_PUBLIC_KID":          os.Getenv("NT_TOKEN_PUBLIC_KID"),
+			"NT_TOKEN_PUBLIC_KEY":          os.Getenv("NT_TOKEN_PUBLIC_KEY"),
+			"NT_ALIAS_DEMO":                os.Getenv("NT_ALIAS_DEMO"),
 		},
 	}
 
@@ -40,7 +40,7 @@ func (app *App) tokenLogin(w http.ResponseWriter, r *http.Request) {
 			ut.ToString(data["username"], ""),
 			ut.ToString(data["database"], ""),
 			os.Getenv("NT_TOKEN_PUBLIC_KID"),
-			os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM_RSA"))
+			os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM"))
 		if err != nil {
 			data["error"] = err.Error()
 		} else {

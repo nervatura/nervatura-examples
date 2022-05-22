@@ -28,10 +28,10 @@ invoice_data = {
   "env": {
     "NT_EXAMPLE_TOKEN_PRIVATE_KEY": os.getenv("NT_EXAMPLE_TOKEN_PRIVATE_KEY"),
     "NT_EXAMPLE_TOKEN_EXP": os.getenv("NT_EXAMPLE_TOKEN_EXP"),
-    "NT_EXAMPLE_TOKEN_ALGORITHM_HMAC": os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM_HMAC"),
+    "NT_EXAMPLE_TOKEN_ALGORITHM": os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM"),
     "NT_TOKEN_ISS": os.getenv("NT_TOKEN_ISS"),
-    "NT_TOKEN_PRIVATE_KID": os.getenv("NT_TOKEN_PRIVATE_KID"),
-    "NT_TOKEN_PRIVATE_KEY": os.getenv("NT_TOKEN_PRIVATE_KEY"),
+    "NT_TOKEN_PUBLIC_KID": os.getenv("NT_TOKEN_PUBLIC_KID"),
+    "NT_TOKEN_PUBLIC_KEY": os.getenv("NT_TOKEN_PUBLIC_KEY"),
     "NT_ALIAS_DEMO": os.getenv("NT_ALIAS_DEMO"),
   },
   "data": {
@@ -205,8 +205,8 @@ async def login(
   }
   token = utils.CreateToken({ 
     "username": username, "database": database,
-    "algorithm":  os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM_HMAC"),
-    "kid": os.getenv("NT_TOKEN_PRIVATE_KID")
+    "algorithm":  os.getenv("NT_EXAMPLE_TOKEN_ALGORITHM"),
+    "kid": os.getenv("NT_TOKEN_PUBLIC_KID")
   })
   request.app.state.session["invoice_token"] = token
   result = createInvoive(token, params)

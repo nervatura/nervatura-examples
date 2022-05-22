@@ -73,17 +73,17 @@ func (app *App) serverShortcuts(w http.ResponseWriter, r *http.Request) {
 		"error":    nil, "exists": false, "homepage": nil, "client_url": "",
 		"api": []string{"cli", "rpc", "http"},
 		"env": map[string]interface{}{
-			"NT_EXAMPLE_TOKEN_PRIVATE_KEY":    os.Getenv("NT_EXAMPLE_TOKEN_PRIVATE_KEY"),
-			"NT_EXAMPLE_TOKEN_EXP":            os.Getenv("NT_EXAMPLE_TOKEN_EXP"),
-			"NT_EXAMPLE_TOKEN_ALGORITHM_HMAC": os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM_HMAC"),
-			"NT_TOKEN_ISS":                    os.Getenv("NT_TOKEN_ISS"),
-			"NT_TOKEN_PRIVATE_KID":            os.Getenv("NT_TOKEN_PRIVATE_KID"),
-			"NT_TOKEN_PRIVATE_KEY":            os.Getenv("NT_TOKEN_PRIVATE_KEY"),
-			"NT_ALIAS_DEMO":                   os.Getenv("NT_ALIAS_DEMO"),
-			"NT_SMTP_HOST":                    os.Getenv("NT_SMTP_HOST"),
-			"NT_SMTP_PORT":                    os.Getenv("NT_SMTP_PORT"),
-			"NT_SMTP_USER":                    os.Getenv("NT_SMTP_USER"),
-			"NT_SMTP_PASSWORD":                os.Getenv("NT_SMTP_PASSWORD"),
+			"NT_EXAMPLE_TOKEN_PRIVATE_KEY": os.Getenv("NT_EXAMPLE_TOKEN_PRIVATE_KEY"),
+			"NT_EXAMPLE_TOKEN_EXP":         os.Getenv("NT_EXAMPLE_TOKEN_EXP"),
+			"NT_EXAMPLE_TOKEN_ALGORITHM":   os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM"),
+			"NT_TOKEN_ISS":                 os.Getenv("NT_TOKEN_ISS"),
+			"NT_TOKEN_PUBLIC_KID":          os.Getenv("NT_TOKEN_PUBLIC_KID"),
+			"NT_TOKEN_PUBLIC_KEY":          os.Getenv("NT_TOKEN_PUBLIC_KEY"),
+			"NT_ALIAS_DEMO":                os.Getenv("NT_ALIAS_DEMO"),
+			"NT_SMTP_HOST":                 os.Getenv("NT_SMTP_HOST"),
+			"NT_SMTP_PORT":                 os.Getenv("NT_SMTP_PORT"),
+			"NT_SMTP_USER":                 os.Getenv("NT_SMTP_USER"),
+			"NT_SMTP_PASSWORD":             os.Getenv("NT_SMTP_PASSWORD"),
 		},
 		"data": map[string]interface{}{
 			"ui_menu":       encode(menuData["ui_menu"]),
@@ -94,8 +94,8 @@ func (app *App) serverShortcuts(w http.ResponseWriter, r *http.Request) {
 	token, err := app.createToken(
 		ut.ToString(data["username"], ""),
 		ut.ToString(data["database"], ""),
-		os.Getenv("NT_TOKEN_PRIVATE_KID"),
-		os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM_HMAC"))
+		os.Getenv("NT_TOKEN_PUBLIC_KID"),
+		os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM"))
 	if err != nil {
 		data["error"] = err.Error()
 		app.render(w, "server_shortcuts", data)
@@ -179,8 +179,8 @@ func (app *App) menuEmail(w http.ResponseWriter, r *http.Request) {
 
 	token, err := app.createToken(
 		"admin", "demo",
-		os.Getenv("NT_TOKEN_PRIVATE_KID"),
-		os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM_HMAC"))
+		os.Getenv("NT_TOKEN_PUBLIC_KID"),
+		os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM"))
 	if err != nil {
 		app.sendRequest(w, 400, map[string]interface{}{
 			"code":  400,

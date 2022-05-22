@@ -16,13 +16,13 @@ func (app *App) client_login(w http.ResponseWriter, r *http.Request) {
 		"title":         "Nervatura Client custom token login - with the HMAC algorithm",
 		"error":         nil,
 		"env": map[string]interface{}{
-			"NT_EXAMPLE_TOKEN_PRIVATE_KEY":    os.Getenv("NT_EXAMPLE_TOKEN_PRIVATE_KEY"),
-			"NT_EXAMPLE_TOKEN_EXP":            os.Getenv("NT_EXAMPLE_TOKEN_EXP"),
-			"NT_EXAMPLE_TOKEN_ALGORITHM_HMAC": os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM_HMAC"),
-			"NT_TOKEN_ISS":                    os.Getenv("NT_TOKEN_ISS"),
-			"NT_TOKEN_PRIVATE_KID":            os.Getenv("NT_TOKEN_PRIVATE_KID"),
-			"NT_TOKEN_PRIVATE_KEY":            os.Getenv("NT_TOKEN_PRIVATE_KEY"),
-			"NT_ALIAS_DEMO":                   os.Getenv("NT_ALIAS_DEMO"),
+			"NT_EXAMPLE_TOKEN_PRIVATE_KEY": os.Getenv("NT_EXAMPLE_TOKEN_PRIVATE_KEY"),
+			"NT_EXAMPLE_TOKEN_EXP":         os.Getenv("NT_EXAMPLE_TOKEN_EXP"),
+			"NT_EXAMPLE_TOKEN_ALGORITHM":   os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM"),
+			"NT_TOKEN_ISS":                 os.Getenv("NT_TOKEN_ISS"),
+			"NT_TOKEN_PUBLIC_KID":          os.Getenv("NT_TOKEN_PUBLIC_KID"),
+			"NT_TOKEN_PUBLIC_KEY":          os.Getenv("NT_TOKEN_PUBLIC_KEY"),
+			"NT_ALIAS_DEMO":                os.Getenv("NT_ALIAS_DEMO"),
 		},
 	}
 	if r.Method == "GET" {
@@ -51,8 +51,8 @@ func (app *App) client_login(w http.ResponseWriter, r *http.Request) {
 	token, err := app.createToken(
 		ut.ToString(data["username"], ""),
 		ut.ToString(data["database"], ""),
-		os.Getenv("NT_TOKEN_PRIVATE_KID"),
-		os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM_HMAC"))
+		os.Getenv("NT_TOKEN_PUBLIC_KID"),
+		os.Getenv("NT_EXAMPLE_TOKEN_ALGORITHM"))
 	if err != nil {
 		data["error"] = err.Error()
 		app.render(w, "client_login", data)

@@ -20,12 +20,12 @@ var login_data = {
   username: "admin",
   database: "demo",
   api_type: process.env.NT_EXAMPLE_DEFAULT_API,
-  title: "Custom token (passwordless) login - public/private key pair",
+  title: "Custom token (passwordless) login",
   error: null, result: null,
   env: {
     NT_EXAMPLE_TOKEN_PRIVATE_KEY: process.env.NT_EXAMPLE_TOKEN_PRIVATE_KEY,
     NT_EXAMPLE_TOKEN_EXP: process.env.NT_EXAMPLE_TOKEN_EXP,
-    NT_EXAMPLE_TOKEN_ALGORITHM_RSA: process.env.NT_EXAMPLE_TOKEN_ALGORITHM_RSA,
+    NT_EXAMPLE_TOKEN_ALGORITHM: process.env.NT_EXAMPLE_TOKEN_ALGORITHM,
     NT_TOKEN_ISS: process.env.NT_TOKEN_ISS,
     NT_TOKEN_PUBLIC_KID: process.env.NT_TOKEN_PUBLIC_KID,
     NT_TOKEN_PUBLIC_KEY: process.env.NT_TOKEN_PUBLIC_KEY,
@@ -40,7 +40,7 @@ router.get('/', function (req, res) {
 router.post('/', function (req, res) {
   var token = utils.CreateToken({ 
     username: req.body.username, database: req.body.database,
-    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_RSA,
+    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM,
     kid: process.env.NT_TOKEN_PUBLIC_KID
   })
   switch (req.body.api_type) {

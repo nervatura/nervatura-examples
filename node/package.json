@@ -18,8 +18,10 @@
     "dotenv": "^16.0.0",
     "ejs": "^3.1.6",
     "express": "^4.17.3",
-    "ffi-napi": "^4.0.3",
     "jsonwebtoken": "^8.5.1",
-    "nervatura": "^5.0.2"
+    "nervatura": "^5.0.4"
+  },
+  "optionalDependencies": {
+    "ffi-napi": "^4.0.3"
   }
 }

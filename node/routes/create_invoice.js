@@ -21,10 +21,10 @@ var invoice_data = {
   env: {
     NT_EXAMPLE_TOKEN_PRIVATE_KEY: process.env.NT_EXAMPLE_TOKEN_PRIVATE_KEY,
     NT_EXAMPLE_TOKEN_EXP: process.env.NT_EXAMPLE_TOKEN_EXP,
-    NT_EXAMPLE_TOKEN_ALGORITHM_HMAC: process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
+    NT_EXAMPLE_TOKEN_ALGORITHM: process.env.NT_EXAMPLE_TOKEN_ALGORITHM,
     NT_TOKEN_ISS: process.env.NT_TOKEN_ISS,
-    NT_TOKEN_PRIVATE_KID: process.env.NT_TOKEN_PRIVATE_KID,
-    NT_TOKEN_PRIVATE_KEY: process.env.NT_TOKEN_PRIVATE_KEY,
+    NT_TOKEN_PUBLIC_KID: process.env.NT_TOKEN_PUBLIC_KID,
+    NT_TOKEN_PUBLIC_KEY: process.env.NT_TOKEN_PUBLIC_KEY,
     NT_ALIAS_DEMO: process.env.NT_ALIAS_DEMO,
   },
   data: {
@@ -230,8 +230,8 @@ router.post('/', function (req, res) {
   })
   token = utils.CreateToken({ 
     username: params.username, database: params.database,
-    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM_HMAC,
-    kid: process.env.NT_TOKEN_PRIVATE_KID
+    algorithm:  process.env.NT_EXAMPLE_TOKEN_ALGORITHM,
+    kid: process.env.NT_TOKEN_PUBLIC_KID
   })
   req.app.get("session")["invoice_token"] = token
   createInvoice(token, params, function(err, trans_id){

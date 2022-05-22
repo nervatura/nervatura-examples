@@ -18,7 +18,7 @@ Open your browser to http://localhost:8080
 
 You do not need a Nervatura backend server to use the CLI and CGO. Automatic server start can be turned off with `NT_EXAMPLE_SERVICE_DISABLED=true`  (see in the `nervatura-examples/node/.env` file).
 
-### **Python and Snap or prebuild binaries**
+### **Python and Snap or setup program**
 
 Recommended API:  
 - CGO (Linux and Windows x64)
@@ -45,15 +45,15 @@ Recommended API:
     $ /snap/nervatura/current/nervatura -env $(pwd)/.env.example
     ```
 
-  - Windows users:
-    - download the [latest version](https://github.com/nervatura/nervatura/releases/latest) to the `nervatura-examples/python/bin` directory
-    - change the value of the `NT_EXAMPLE_SERVICE_PATH` (`nervatura-examples/python/.env.example` file): "/snap/nervatura/current/nervatura" -> "bin/nervatura.exe"
-    - change the value of the `NT_EXAMPLE_SERVICE_LIB` (`nervatura-examples/python/.env.example` file): "/snap/nervatura/current/nervatura.so" -> "bin/nervatura.dll"
+  - Windows:
+    - download and install the [nervatura_VERSION_windows_amd64.exe](https://github.com/nervatura/nervatura/releases/latest) setup program
+    - change the value of the `NT_EXAMPLE_SERVICE_PATH` (`nervatura-examples/python/.env.example` file): "/snap/nervatura/current/nervatura" -> "nervatura"
+    - change the value of the `NT_EXAMPLE_SERVICE_LIB` (`nervatura-examples/python/.env.example` file): "/snap/nervatura/current/nervatura.so" -> "C:/ProgramData/Nervatura/nervatura.dll"
 
     Start the Nervatura backend server (gRPC and HTTP examples)
 
     ```
-      $ bin/nervatura -env .env.example
+      $ nervatura -env .env.example
     ```
 ### **Go and Docker**
 
@@ -79,8 +79,8 @@ Recommended API:
 
 - Create a demo database - **All examples require a demo database. Please run this first!**
 - Basic password login
-- Custom token (passwordless) login - public/private key pair
-- Nervatura Client custom token login - with the HMAC algorithm
+- Custom token (passwordless) login
+- Nervatura Client custom token login
 - Using external API for token based authentication
 - Nervatura Client language translation
 - Create an invoice

@@ -118,8 +118,8 @@ func (app *App) home(w http.ResponseWriter, r *http.Request) {
 func (app *App) createToken(username, database, kid, algorithm string) (token string, err error) {
 	if app.privateKey == "" {
 		app.privateKey = ut.GetHash(time.Now().Format("20060102"))
-		if _, err := os.Stat(os.Getenv("NT_TOKEN_PRIVATE_KEY")); err == nil {
-			content, err := ioutil.ReadFile(filepath.Clean(os.Getenv("NT_TOKEN_PRIVATE_KEY")))
+		if _, err := os.Stat(os.Getenv("NT_EXAMPLE_TOKEN_PRIVATE_KEY")); err == nil {
+			content, err := ioutil.ReadFile(filepath.Clean(os.Getenv("NT_EXAMPLE_TOKEN_PRIVATE_KEY")))
 			if err == nil {
 				app.privateKey = string(content)
 			}
