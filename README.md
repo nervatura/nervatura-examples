@@ -90,4 +90,4 @@ Recommended API:
 - Nervatura Client menu shortcuts
 - Nervatura CSV Report Example
 
-More info see [**Nervatura Docs**](https://nervatura.github.io/nervatura/docs)
+More info see [**Nervatura Docs**](https://nervatura.github.io/nervatura)
