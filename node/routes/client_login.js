@@ -46,7 +46,7 @@ router.post('/redirect', function(req, res) {
     kid: process.env.NT_TOKEN_PUBLIC_KID
   })
   if(req.body.response_type === "code") {
-    var code = utils.Guid()
+    var code = `${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`
     req.app.get("session")[code] = token
     url += `?#code=${code}&callback=http://${process.env.NT_EXAMPLE_HOST}:${process.env.NT_EXAMPLE_PORT}/client_login/token&error=http://${process.env.NT_EXAMPLE_HOST}:${process.env.NT_EXAMPLE_PORT}/client_login`
   } else {

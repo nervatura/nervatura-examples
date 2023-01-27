@@ -1,6 +1,6 @@
 {
   "name": "nervatura-examples",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Nervatura Node.js examples",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "Csaba Kappel <csaba.kappel@nervatura.com> (http://nervatura.com)",
   "license": "LGPL-3.0",
   "dependencies": {
-    "@grpc/grpc-js": "^1.8.5",
+    "@grpc/grpc-js": "^1.8.7",
     "@grpc/proto-loader": "^0.7.4",
     "async": "^3.2.4",
     "body-parser": "^1.20.1",
@@ -18,7 +18,7 @@
     "dotenv": "^16.0.3",
     "ejs": "^3.1.8",
     "express": "^4.18.2",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "nervatura": "^5.1.0"
   },
   "optionalDependencies": {
