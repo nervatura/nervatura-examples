@@ -7,8 +7,9 @@ import (
 
 func (app *App) clientConfig(w http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
-		"title":      "Nervatura Client language translation",
-		"client_url": "http://localhost:" + os.Getenv("NT_HTTP_PORT") + "/client",
+		"title":       "Nervatura Client language translation",
+		"client_url":  "http://localhost:" + os.Getenv("NT_HTTP_PORT") + "/client",
+		"locales_url": "http://localhost:" + os.Getenv("NT_HTTP_PORT") + "/locales",
 		"env": map[string]interface{}{
 			"NT_CLIENT_CONFIG": os.Getenv("NT_CLIENT_CONFIG"),
 			"NT_ALIAS_DEMO":    os.Getenv("NT_ALIAS_DEMO"),

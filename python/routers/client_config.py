@@ -17,6 +17,7 @@ templates = Jinja2Templates(directory="templates")
 config_data = {
   "title": "Nervatura Client language translation",
   "client_url": "http://localhost:"+str(os.getenv("NT_HTTP_PORT"))+"/client",
+  "locales_url": "http://localhost:"+str(os.getenv("NT_HTTP_PORT"))+"/locales",
   "env": {
     "NT_CLIENT_CONFIG": os.getenv("NT_CLIENT_CONFIG"),
     "NT_ALIAS_DEMO": os.getenv("NT_ALIAS_DEMO")

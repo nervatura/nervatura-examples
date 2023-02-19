@@ -12,6 +12,7 @@ var router = express.Router();
 var config_data = {
   title: "Nervatura Client language translation",
   client_url: `http://localhost:${process.env.NT_HTTP_PORT}/client`,
+  locales_url: `http://localhost:${process.env.NT_HTTP_PORT}/locales`,
   env: {
     NT_CLIENT_CONFIG: process.env.NT_CLIENT_CONFIG,
     NT_ALIAS_DEMO: process.env.NT_ALIAS_DEMO
