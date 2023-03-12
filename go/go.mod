@@ -10,12 +10,12 @@ require (
 require github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 
 require (
-	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/nervatura/nervatura/service v0.0.0-20230219220333-7dba4862f9b7
+	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/nervatura/nervatura/service v0.0.0-20230312191815-ea61e11ec933
 	github.com/slavamuravey/cors v1.0.2
-	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
-	google.golang.org/genproto v0.0.0-20230216225411-c8e22ba71e44 // indirect
-	google.golang.org/protobuf v1.28.1
+	golang.org/x/net v0.8.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
+	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4 // indirect
+	google.golang.org/protobuf v1.29.0
 )
