@@ -1,7 +1,7 @@
 """ 
 This file is part of the Nervatura Framework
 http://nervatura.com
-Copyright © 2011-2022, Csaba Kappel
+Copyright © 2011-2023, Csaba Kappel
 License: LGPLv3
 https://raw.githubusercontent.com/nervatura/nervatura/master/LICENSE 
 """
@@ -31,6 +31,24 @@ def DatabaseCreate(apiKey, options):
     except requests.ConnectionError:
       return [None, "Connection failure"]
 
+def UserLogin(options):
+    headers = {"Content-Type": "application/json; charset=utf-8" }
+    try:
+      response = requests.post(service_url+"/auth/login", headers=headers, json=options)
+      return decodeResult(response.text, response.status_code)
+    except requests.ConnectionError:
+      return [None, "Connection failure"]
+
+def TokenRefresh(token):
+    headers = {
+      "Content-Type": "application/json; charset=utf-8", 
+      "Authorization": "Bearer "+token }
+    try:
+      response = requests.get(service_url+"/auth/refresh", headers=headers)
+      return decodeResult(response.text, response.status_code)
+    except requests.ConnectionError:
+      return [None, "Connection failure"]
+
 def TokenValidate(token):
     headers = {
       "Content-Type": "application/json; charset=utf-8", 
@@ -41,10 +59,50 @@ def TokenValidate(token):
     except requests.ConnectionError:
       return [None, "Connection failure"]
 
-def UserLogin(options):
-    headers = {"Content-Type": "application/json; charset=utf-8" }
+def UserPassword(token, options):
+    headers = {
+      "Content-Type": "application/json; charset=utf-8", 
+      "Authorization": "Bearer "+token }
     try:
-      response = requests.post(service_url+"/auth/login", headers=headers, json=options)
+      response = requests.post(service_url+"/auth/password", headers=headers, json=options)
+      return decodeResult(response.text, response.status_code)
+    except requests.ConnectionError:
+      return [None, "Connection failure"]
+
+def Delete(token, options):
+    headers = {
+      "Content-Type": "application/json; charset=utf-8", 
+      "Authorization": "Bearer "+token }
+    try:
+      path = service_url+"/"+options["nervatype"]
+      if "id" in options:
+        path += "?id="+options["id"]
+      elif "key" in options:
+        path += "?key="+options["key"]
+      response = requests.delete(path, headers=headers)
+      return decodeResult(response.text, response.status_code)
+    except requests.ConnectionError:
+      return [None, "Connection failure"]
+
+def Get(token, options):
+    headers = {
+      "Content-Type": "application/json; charset=utf-8", 
+      "Authorization": "Bearer "+token }
+    try:
+      path = service_url+"/"+options["nervatype"]
+      if "ids" in options:
+        if type(options["ids"]) == list:
+          path += "/"+",".join(map(str, options["ids"]))
+        else:
+          path += "/"+options["ids"]
+      else:
+        if ("metadata" in options) and (options["metadata"] == True):
+          path += "?metadata=true"
+        else:
+          path += "?metadata=false"
+          if "filter" in options:
+            path += "&filter="+options["filter"]
+      response = requests.get(path, headers=headers)
       return decodeResult(response.text, response.status_code)
     except requests.ConnectionError:
       return [None, "Connection failure"]
@@ -55,6 +113,16 @@ def View(token, data):
       "Authorization": "Bearer "+token }
     try:
       response = requests.post(service_url+"/view", headers=headers, json=data)
+      return decodeResult(response.text, response.status_code)
+    except requests.ConnectionError:
+      return [None, "Connection failure"]
+
+def Function(token, options):
+    headers = {
+      "Content-Type": "application/json; charset=utf-8", 
+      "Authorization": "Bearer "+token }
+    try:
+      response = requests.post(service_url+"/function", headers=headers, json=options)
       return decodeResult(response.text, response.status_code)
     except requests.ConnectionError:
       return [None, "Connection failure"]
@@ -80,6 +148,45 @@ def Report(token, options):
       if "nervatype" in options:
         params["nervatype"] = options["nervatype"]
       response = requests.get(service_url+"/report?filters[@id]="+str(options["filters"]["@id"]), headers=headers, params=params)
+      return decodeResult(response.text, response.status_code)
+    except requests.ConnectionError:
+      return [None, "Connection failure"]
+
+def ReportList(token, options):
+    headers = {
+      "Content-Type": "application/json; charset=utf-8", 
+      "Authorization": "Bearer "+token }
+    try:
+      path = service_url+"/report/list"
+      if "label" in options:
+        path += "?label="+options["label"]
+      response = requests.get(path, headers=headers)
+      return decodeResult(response.text, response.status_code)
+    except requests.ConnectionError:
+      return [None, "Connection failure"]
+
+def ReportDelete(token, options):
+    headers = {
+      "Content-Type": "application/json; charset=utf-8", 
+      "Authorization": "Bearer "+token }
+    try:
+      path = service_url+"/report/delete"
+      if "reportkey" in options:
+        path += "?reportkey="+options["reportkey"]
+      response = requests.delete(path, headers=headers)
+      return decodeResult(response.text, response.status_code)
+    except requests.ConnectionError:
+      return [None, "Connection failure"]
+
+def ReportInstall(token, options):
+    headers = {
+      "Content-Type": "application/json; charset=utf-8", 
+      "Authorization": "Bearer "+token }
+    try:
+      path = service_url+"/report/install"
+      if "reportkey" in options:
+        path += "?reportkey="+options["reportkey"]
+      response = requests.post(path, headers=headers)
       return decodeResult(response.text, response.status_code)
     except requests.ConnectionError:
       return [None, "Connection failure"]

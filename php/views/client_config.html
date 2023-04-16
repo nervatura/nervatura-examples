@@ -1,0 +1,22 @@
+<div class="w3-sand w3-topbar w3-bottombar w3-border-gray" >
+  <div class="w3-cell-row" >
+    <repeat group="{{ @env }}" key="{{ @ekey }}" value="{{ @evalue }}">
+      <div class="w3-cell w3-left w3-padding-small w3-small">
+        <span class="w3-tag w3-light-grey w3-border"><b>{{ @ekey }}</b></span>
+        <span class="w3-tag w3-white w3-border">{{ @evalue }}</span>
+      </div>
+    </repeat>
+  </div>
+</div>
+<div class="w3-cell-row" style="position: absolute; height: 90%; width: 100%;">
+  <div class="w3-cell w3-half" style="height: 100%;">
+    <iframe src = "{{ @client_url }}" style="height: 100%; width: 100%; border: none" frameborder="0">
+      Sorry your browser does not support inline frames.
+    </iframe>
+  </div>
+  <div class="w3-cell w3-half w3-padding-small" style="height: 100%;">
+    <iframe src = "{{ @locales_url }}" style="height: 100%; width: 100%; border: none" frameborder="0">
+      Sorry your browser does not support inline frames.
+    </iframe>
+  </div>
+</div>

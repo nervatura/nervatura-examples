@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	ut "github.com/nervatura/nervatura/service/pkg/utils"
+	ut "github.com/nervatura/nervatura-examples/utils"
 )
 
 func (app *App) checkMenuExists(apiType, token string) bool {
@@ -15,7 +15,7 @@ func (app *App) checkMenuExists(apiType, token string) bool {
 			"values": []interface{}{"mnu_example_homepage", "mnu_example_email"},
 		},
 	}
-	viewResult, err := app.getAPI("View", apiType, token, views)
+	viewResult, err := app.apiMap[apiType].View(token, views)
 	if err != nil {
 		return false
 	}
@@ -23,12 +23,12 @@ func (app *App) checkMenuExists(apiType, token string) bool {
 }
 
 func (app *App) createShortcuts(apiType, token string, menuData map[string]interface{}) error {
-	_, err := app.getAPI("Update", apiType, token, map[string]interface{}{
+	_, err := app.apiMap[apiType].Update(token, map[string]interface{}{
 		"nervatype": "ui_menu", "data": menuData["ui_menu"]})
 	if err != nil {
 		return err
 	}
-	_, err = app.getAPI("Update", apiType, token, map[string]interface{}{
+	_, err = app.apiMap[apiType].Update(token, map[string]interface{}{
 		"nervatype": "ui_menufields", "data": menuData["ui_menufields"]})
 	return err
 }
@@ -207,7 +207,7 @@ func (app *App) menuEmail(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	_, err = app.getAPI("Function", os.Getenv("NT_EXAMPLE_DEFAULT_API"), token, params)
+	_, err = app.apiMap[os.Getenv("NT_EXAMPLE_DEFAULT_API")].Function(token, params)
 	if err != nil {
 		app.sendRequest(w, 400, map[string]interface{}{
 			"code":  400,

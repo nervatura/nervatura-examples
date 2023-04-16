@@ -1,7 +1,7 @@
 /*
 This file is part of the Nervatura Framework
 http://nervatura.com
-Copyright © 2011-2022, Csaba Kappel
+Copyright © 2011-2023, Csaba Kappel
 License: LGPLv3
 https://raw.githubusercontent.com/nervatura/nervatura/master/LICENSE
 */
@@ -65,7 +65,7 @@ router.post('/token', function(req, res) {
       callback: `http://${process.env.NT_EXAMPLE_HOST}:${process.env.NT_EXAMPLE_PORT}/client_login`
     })
   } else {
-    res.status(400).send({ code: 400, message: "Missing or invalid code" })
+    res.status(400).send({ code: 400, error: { message: "Missing or invalid code" } })
   }
 });
 

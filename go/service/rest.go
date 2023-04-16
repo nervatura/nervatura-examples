@@ -3,11 +3,13 @@ package service
 import (
 	"bytes"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 
-	ut "github.com/nervatura/nervatura/service/pkg/utils"
+	ut "github.com/nervatura/nervatura-examples/utils"
 )
 
 type HttpClient struct{}
@@ -40,7 +42,7 @@ func (rest *HttpClient) request(method, path, token, apiKey string, options inte
 
 	if response.Header.Get("Content-Type") == "application/pdf" {
 		responseStr := ""
-		responseData, err := ioutil.ReadAll(response.Body)
+		responseData, err := io.ReadAll(response.Body)
 		if err == nil {
 			responseStr = string(responseData)
 		}
@@ -48,14 +50,16 @@ func (rest *HttpClient) request(method, path, token, apiKey string, options inte
 	}
 
 	var result interface{}
-	err = ut.ConvertFromReader(response.Body, &result)
-	if err != nil {
-		return nil, errors.New(response.Status)
-	}
-	if values, valid := result.(map[string]interface{}); valid {
-		if value, found := values["code"]; found {
-			if value != float64(200) && value != float64(204) {
-				return nil, errors.New(ut.ToString(values["message"], "Error"))
+	if response.StatusCode == 200 {
+		err = ut.ConvertFromReader(response.Body, &result)
+		if err != nil {
+			return nil, errors.New(response.Status)
+		}
+		if values, valid := result.(map[string]interface{}); valid {
+			if value, found := values["code"]; found {
+				if value != float64(200) && value != float64(204) {
+					return nil, errors.New(ut.ToString(values["message"], "Error"))
+				}
 			}
 		}
 	}
@@ -65,17 +69,55 @@ func (rest *HttpClient) request(method, path, token, apiKey string, options inte
 	return result, err
 }
 
-func (rest *HttpClient) UserLogin(options map[string]interface{}) (interface{}, error) {
-	return rest.request("POST", "/auth/login", "", "", options)
-}
-
 func (rest *HttpClient) DatabaseCreate(apiKey string, options map[string]interface{}) (interface{}, error) {
 	path := "/database?alias=" + ut.ToString(options["database"], "") + "&demo=" + ut.ToString(options["demo"], "false")
 	return rest.request("POST", path, "", apiKey, options)
 }
 
-func (rest *HttpClient) TokenValidate(token string) (interface{}, error) {
+func (rest *HttpClient) UserLogin(options map[string]interface{}) (interface{}, error) {
+	return rest.request("POST", "/auth/login", "", "", options)
+}
+
+func (rest *HttpClient) TokenRefresh(token string) (interface{}, error) {
+	return rest.request("GET", "/auth/refresh", token, "", map[string]interface{}{})
+}
+
+func (rest *HttpClient) TokenLogin(token string) (interface{}, error) {
 	return rest.request("GET", "/auth/validate", token, "", map[string]interface{}{})
+}
+
+func (rest *HttpClient) UserPassword(token string, options map[string]interface{}) (interface{}, error) {
+	return rest.request("POST", "/auth/password", token, "", options)
+}
+
+func (rest *HttpClient) Delete(token string, options map[string]interface{}) (interface{}, error) {
+	path := "/" + ut.ToString(options["nervatype"], "")
+	if id, found := options["id"]; found {
+		path += "?id=" + ut.ToString(id, "")
+	} else if key, found := options["key"]; found {
+		path += "?key=" + ut.ToString(key, "")
+	}
+	return rest.request("DELETE", path, token, "", options)
+}
+
+func (rest *HttpClient) Get(token string, options map[string]interface{}) (interface{}, error) {
+	path := "/" + ut.ToString(options["nervatype"], "")
+	if ids, found := options["ids"].([]int64); found {
+		var sIds []string
+		for _, id := range ids {
+			sIds = append(sIds, strconv.Itoa(int(id)))
+		}
+		path += "/" + strings.Join(sIds, ",")
+	}
+	if metadata, found := options["metadata"].(bool); found && metadata {
+		path += "?metadata=true"
+	} else {
+		path += "?metadata=false"
+	}
+	if filter, found := options["filter"].([]string); found {
+		path += "&" + strings.Join(filter, "|")
+	}
+	return rest.request("GET", path, token, "", map[string]interface{}{})
 }
 
 func (rest *HttpClient) View(token string, data []map[string]interface{}) (interface{}, error) {
@@ -100,4 +142,28 @@ func (rest *HttpClient) Report(token string, options map[string]interface{}) (in
 		path += "&nervatype=" + ut.ToString(nervatype, "")
 	}
 	return rest.request("GET", path, token, "", map[string]interface{}{})
+}
+
+func (rest *HttpClient) ReportList(token string, options map[string]interface{}) (interface{}, error) {
+	path := "/report/list"
+	if label, found := options["label"]; found {
+		path += "?label=" + ut.ToString(label, "")
+	}
+	return rest.request("GET", path, token, "", map[string]interface{}{})
+}
+
+func (rest *HttpClient) ReportDelete(token string, options map[string]interface{}) (interface{}, error) {
+	path := "/report/delete"
+	if reportkey, found := options["reportkey"]; found {
+		path += "?reportkey=" + ut.ToString(reportkey, "")
+	}
+	return rest.request("DELETE", path, token, "", map[string]interface{}{})
+}
+
+func (rest *HttpClient) ReportInstall(token string, options map[string]interface{}) (interface{}, error) {
+	path := "/report/install"
+	if reportkey, found := options["reportkey"]; found {
+		path += "?reportkey=" + ut.ToString(reportkey, "")
+	}
+	return rest.request("POST", path, token, "", map[string]interface{}{})
 }

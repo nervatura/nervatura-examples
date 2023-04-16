@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	ut "github.com/nervatura/nervatura/service/pkg/utils"
+	ut "github.com/nervatura/nervatura-examples/utils"
 )
 
 func (app *App) checkReportExists(apiType, token string) bool {
@@ -14,7 +14,7 @@ func (app *App) checkReportExists(apiType, token string) bool {
 			"values": []interface{}{"csv_example_report"},
 		},
 	}
-	viewResult, err := app.getAPI("View", apiType, token, views)
+	viewResult, err := app.apiMap[apiType].View(token, views)
 	if err != nil {
 		return false
 	}
@@ -22,7 +22,7 @@ func (app *App) checkReportExists(apiType, token string) bool {
 }
 
 func (app *App) createReport(apiType, token string, reportData map[string]interface{}) error {
-	_, err := app.getAPI("Update", apiType, token, map[string]interface{}{
+	_, err := app.apiMap[apiType].Update(token, map[string]interface{}{
 		"nervatype": "ui_report", "data": reportData["ui_report"]})
 	return err
 }

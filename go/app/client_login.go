@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	ut "github.com/nervatura/nervatura/service/pkg/utils"
+	ut "github.com/nervatura/nervatura-examples/utils"
 )
 
 func (app *App) client_login(w http.ResponseWriter, r *http.Request) {

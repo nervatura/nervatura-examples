@@ -6,17 +6,39 @@ import (
 	"strings"
 	"time"
 
+	ut "github.com/nervatura/nervatura-examples/utils"
 	pb "github.com/nervatura/nervatura/service/pkg/proto"
-	ut "github.com/nervatura/nervatura/service/pkg/utils"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
-type RpcClient struct{}
+type RpcClient struct {
+	conn      *grpc.ClientConn
+	permanent bool
+}
 
-func (rpc *RpcClient) Connect() (*grpc.ClientConn, error) {
-	return grpc.Dial(os.Getenv("NT_EXAMPLE_HOST")+":"+os.Getenv("NT_GRPC_PORT"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+func (rpc *RpcClient) Connect(keeping bool) (err error) {
+	if rpc.conn == nil {
+		rpc.conn, err = grpc.Dial(os.Getenv("NT_EXAMPLE_HOST")+":"+os.Getenv("NT_GRPC_PORT"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	}
+	if keeping {
+		rpc.permanent = true
+	}
+	return err
+}
+
+func (rpc *RpcClient) Close(all bool) {
+	if rpc.conn != nil && (!rpc.permanent || all) {
+		_ = rpc.conn.Close()
+		rpc.conn = nil
+		rpc.permanent = false
+	}
+}
+
+func (rpc *RpcClient) PermanentConnect() {
+
 }
 
 func (rpc *RpcClient) decodeValue(values map[string]*pb.Value) map[string]interface{} {
@@ -66,16 +88,20 @@ func (rpc *RpcClient) mapValue(values map[string]interface{}) map[string]*pb.Val
 	return valueMap
 }
 
-func (rpc *RpcClient) DatabaseCreate(conn *grpc.ClientConn, apiKey string, options map[string]interface{}) (interface{}, error) {
+func (rpc *RpcClient) DatabaseCreate(apiKey string, options map[string]interface{}) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	md := metadata.New(map[string]string{"x-api-key": apiKey})
 	metaCtx := metadata.NewOutgoingContext(context.Background(), md)
 	ctx, cancel := context.WithTimeout(metaCtx, time.Second*30)
 	defer cancel()
 
-	response, err := pb.NewAPIClient(conn).DatabaseCreate(ctx, &pb.RequestDatabaseCreate{
+	response, err := pb.NewAPIClient(rpc.conn).DatabaseCreate(ctx, &pb.RequestDatabaseCreate{
 		Alias: ut.ToString(options["database"], ""),
 		Demo:  ut.ToBoolean(options["demo"], false),
 	})
+	rpc.Close(false)
 	if err != nil {
 		return nil, err
 	}
@@ -86,15 +112,19 @@ func (rpc *RpcClient) DatabaseCreate(conn *grpc.ClientConn, apiKey string, optio
 	return results, nil
 }
 
-func (rpc *RpcClient) UserLogin(conn *grpc.ClientConn, options map[string]interface{}) (interface{}, error) {
+func (rpc *RpcClient) UserLogin(options map[string]interface{}) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	response, err := pb.NewAPIClient(conn).UserLogin(ctx, &pb.RequestUserLogin{
+	response, err := pb.NewAPIClient(rpc.conn).UserLogin(ctx, &pb.RequestUserLogin{
 		Username: ut.ToString(options["username"], ""),
 		Password: ut.ToString(options["password"], ""),
 		Database: ut.ToString(options["database"], ""),
 	})
+	rpc.Close(false)
 	if err != nil {
 		return nil, err
 	}
@@ -105,13 +135,17 @@ func (rpc *RpcClient) UserLogin(conn *grpc.ClientConn, options map[string]interf
 	}, nil
 }
 
-func (rpc *RpcClient) TokenLogin(conn *grpc.ClientConn, token string) (interface{}, error) {
+func (rpc *RpcClient) TokenLogin(token string) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	md := metadata.New(map[string]string{"authorization": "Bearer " + token})
 	metaCtx := metadata.NewOutgoingContext(context.Background(), md)
 	ctx, cancel := context.WithTimeout(metaCtx, time.Second*30)
 	defer cancel()
 
-	response, err := pb.NewAPIClient(conn).TokenLogin(ctx, &pb.RequestEmpty{})
+	response, err := pb.NewAPIClient(rpc.conn).TokenLogin(ctx, &pb.RequestEmpty{})
+	rpc.Close(false)
 	if err != nil {
 		return nil, err
 	}
@@ -125,13 +159,17 @@ func (rpc *RpcClient) TokenLogin(conn *grpc.ClientConn, token string) (interface
 	}, nil
 }
 
-func (rpc *RpcClient) TokenRefresh(conn *grpc.ClientConn, token string) (interface{}, error) {
+func (rpc *RpcClient) TokenRefresh(token string) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	md := metadata.New(map[string]string{"authorization": "Bearer " + token})
 	metaCtx := metadata.NewOutgoingContext(context.Background(), md)
 	ctx, cancel := context.WithTimeout(metaCtx, time.Second*30)
 	defer cancel()
 
-	response, err := pb.NewAPIClient(conn).TokenRefresh(ctx, &pb.RequestEmpty{})
+	response, err := pb.NewAPIClient(rpc.conn).TokenRefresh(ctx, &pb.RequestEmpty{})
+	rpc.Close(false)
 	if err != nil {
 		return nil, err
 	}
@@ -139,23 +177,29 @@ func (rpc *RpcClient) TokenRefresh(conn *grpc.ClientConn, token string) (interfa
 		"token": response.Value}, nil
 }
 
-func (rpc *RpcClient) UserPassword(conn *grpc.ClientConn, token string, options map[string]interface{}) (interface{}, error) {
+func (rpc *RpcClient) UserPassword(token string, options map[string]interface{}) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	md := metadata.New(map[string]string{"authorization": "Bearer " + token})
 	metaCtx := metadata.NewOutgoingContext(context.Background(), md)
 	ctx, cancel := context.WithTimeout(metaCtx, time.Second*30)
 	defer cancel()
 
-	_, err := pb.NewAPIClient(conn).UserPassword(ctx, &pb.RequestUserPassword{
+	_, err := pb.NewAPIClient(rpc.conn).UserPassword(ctx, &pb.RequestUserPassword{
 		Username:   ut.ToString(options["username"], ""),
 		Password:   ut.ToString(options["password"], ""),
 		Confirm:    ut.ToString(options["confirm"], ""),
 		Custnumber: ut.ToString(options["custnumber"], ""),
 	})
-
+	rpc.Close(false)
 	return nil, err
 }
 
-func (rpc *RpcClient) Report(conn *grpc.ClientConn, token string, options map[string]interface{}) (interface{}, error) {
+func (rpc *RpcClient) Report(token string, options map[string]interface{}) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	md := metadata.New(map[string]string{"authorization": "Bearer " + token})
 	metaCtx := metadata.NewOutgoingContext(context.Background(), md)
 	ctx, cancel := context.WithTimeout(metaCtx, time.Second*30)
@@ -165,7 +209,7 @@ func (rpc *RpcClient) Report(conn *grpc.ClientConn, token string, options map[st
 	if values, found := options["filters"].(map[string]interface{}); found {
 		filters = rpc.mapValue(values)
 	}
-	response, err := pb.NewAPIClient(conn).Report(ctx, &pb.RequestReport{
+	response, err := pb.NewAPIClient(rpc.conn).Report(ctx, &pb.RequestReport{
 		Reportkey:   ut.ToString(options["reportkey"], ""),
 		Orientation: pb.ReportOrientation(pb.ReportOrientation_value[ut.ToString(options["orientation"], "portrait")]),
 		Size:        pb.ReportSize(pb.ReportSize_value[ut.ToString(options["size"], "a4")]),
@@ -175,6 +219,7 @@ func (rpc *RpcClient) Report(conn *grpc.ClientConn, token string, options map[st
 		Template:    ut.ToString(options["template"], ""),
 		Filters:     filters,
 	})
+	rpc.Close(false)
 	if err != nil {
 		return nil, err
 	}
@@ -184,15 +229,19 @@ func (rpc *RpcClient) Report(conn *grpc.ClientConn, token string, options map[st
 	return result, err
 }
 
-func (rpc *RpcClient) ReportList(conn *grpc.ClientConn, token string, options map[string]interface{}) (interface{}, error) {
+func (rpc *RpcClient) ReportList(token string, options map[string]interface{}) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	md := metadata.New(map[string]string{"authorization": "Bearer " + token})
 	metaCtx := metadata.NewOutgoingContext(context.Background(), md)
 	ctx, cancel := context.WithTimeout(metaCtx, time.Second*30)
 	defer cancel()
 
-	response, err := pb.NewAPIClient(conn).ReportList(ctx, &pb.RequestReportList{
+	response, err := pb.NewAPIClient(rpc.conn).ReportList(ctx, &pb.RequestReportList{
 		Label: ut.ToString(options["label"], ""),
 	})
+	rpc.Close(false)
 	if err != nil {
 		return nil, err
 	}
@@ -212,15 +261,19 @@ func (rpc *RpcClient) ReportList(conn *grpc.ClientConn, token string, options ma
 	return results, err
 }
 
-func (rpc *RpcClient) ReportInstall(conn *grpc.ClientConn, token string, options map[string]interface{}) (interface{}, error) {
+func (rpc *RpcClient) ReportInstall(token string, options map[string]interface{}) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	md := metadata.New(map[string]string{"authorization": "Bearer " + token})
 	metaCtx := metadata.NewOutgoingContext(context.Background(), md)
 	ctx, cancel := context.WithTimeout(metaCtx, time.Second*30)
 	defer cancel()
 
-	response, err := pb.NewAPIClient(conn).ReportInstall(ctx, &pb.RequestReportInstall{
+	response, err := pb.NewAPIClient(rpc.conn).ReportInstall(ctx, &pb.RequestReportInstall{
 		Reportkey: ut.ToString(options["reportkey"], ""),
 	})
+	rpc.Close(false)
 	if err != nil {
 		return nil, err
 	}
@@ -228,19 +281,26 @@ func (rpc *RpcClient) ReportInstall(conn *grpc.ClientConn, token string, options
 	return response.Id, nil
 }
 
-func (rpc *RpcClient) ReportDelete(conn *grpc.ClientConn, token string, options map[string]interface{}) (interface{}, error) {
+func (rpc *RpcClient) ReportDelete(token string, options map[string]interface{}) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	md := metadata.New(map[string]string{"authorization": "Bearer " + token})
 	metaCtx := metadata.NewOutgoingContext(context.Background(), md)
 	ctx, cancel := context.WithTimeout(metaCtx, time.Second*30)
 	defer cancel()
 
-	_, err := pb.NewAPIClient(conn).ReportDelete(ctx, &pb.RequestReportDelete{
+	_, err := pb.NewAPIClient(rpc.conn).ReportDelete(ctx, &pb.RequestReportDelete{
 		Reportkey: ut.ToString(options["reportkey"], ""),
 	})
+	rpc.Close(false)
 	return nil, err
 }
 
-func (rpc *RpcClient) Function(conn *grpc.ClientConn, token string, options map[string]interface{}) (result interface{}, err error) {
+func (rpc *RpcClient) Function(token string, options map[string]interface{}) (result interface{}, err error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	checkValue := func(values map[string]interface{}) bool {
 		for _, value := range values {
 			switch value.(type) {
@@ -271,10 +331,11 @@ func (rpc *RpcClient) Function(conn *grpc.ClientConn, token string, options map[
 			}
 		}
 	}
-	response, err := pb.NewAPIClient(conn).Function(ctx, &pb.RequestFunction{
+	response, err := pb.NewAPIClient(rpc.conn).Function(ctx, &pb.RequestFunction{
 		Key:    ut.ToString(options["key"], ""),
 		Values: rpcValues, Value: rpcValue,
 	})
+	rpc.Close(false)
 	if err != nil {
 		return nil, err
 	}
@@ -283,7 +344,10 @@ func (rpc *RpcClient) Function(conn *grpc.ClientConn, token string, options map[
 	return result, err
 }
 
-func (rpc *RpcClient) View(conn *grpc.ClientConn, token string, data []map[string]interface{}) (interface{}, error) {
+func (rpc *RpcClient) View(token string, data []map[string]interface{}) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	md := metadata.New(map[string]string{"authorization": "Bearer " + token})
 	metaCtx := metadata.NewOutgoingContext(context.Background(), md)
 	ctx, cancel := context.WithTimeout(metaCtx, time.Second*30)
@@ -304,9 +368,10 @@ func (rpc *RpcClient) View(conn *grpc.ClientConn, token string, data []map[strin
 		}
 		rpcOptions = append(rpcOptions, query)
 	}
-	response, err := pb.NewAPIClient(conn).View(ctx, &pb.RequestView{
+	response, err := pb.NewAPIClient(rpc.conn).View(ctx, &pb.RequestView{
 		Options: rpcOptions,
 	})
+	rpc.Close(false)
 	if err != nil {
 		return nil, err
 	}
@@ -322,114 +387,9 @@ func (rpc *RpcClient) View(conn *grpc.ClientConn, token string, data []map[strin
 	return results, nil
 }
 
-func (rpc *RpcClient) Get(conn *grpc.ClientConn, token string, options map[string]interface{}) (interface{}, error) {
-
-	itemMap := map[string]func(data *pb.ResponseGet_Value) interface{}{
-		"address": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetAddress()
-			/*
-				-> interface result:
-				address := data.GetAddress()
-				return map[string]interface{}{
-					"id": address.Id,
-					"zipcode": address.Zipcode,
-					...
-				}
-			*/
-		},
-		"barcode": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetBarcode()
-		},
-		"contact": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetContact()
-		},
-		"currency": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetCurrency()
-		},
-		"customer": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetCustomer()
-		},
-		"deffield": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetDeffield()
-		},
-		"employee": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetEmployee()
-		},
-		"event": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetEvent()
-		},
-		"fieldvalue": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetFieldvalue()
-		},
-		"groups": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetGroups()
-		},
-		"item": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetItem()
-		},
-		"link": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetLink()
-		},
-		"log": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetLog()
-		},
-		"movement": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetMovement()
-		},
-		"numberdef": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetNumberdef()
-		},
-		"pattern": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetPattern()
-		},
-		"payment": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetPayment()
-		},
-		"place": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetPlace()
-		},
-		"price": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetPrice()
-		},
-		"product": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetProduct()
-		},
-		"project": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetProject()
-		},
-		"rate": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetRate()
-		},
-		"tax": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetTax()
-		},
-		"tool": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetTool()
-		},
-		"trans": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetTrans()
-		},
-		"ui_audit": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetUiAudit()
-		},
-		"ui_menu": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetUiMenu()
-		},
-		"ui_menufields": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetUiMenufields()
-		},
-		"ui_message": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetUiMessage()
-		},
-		"ui_printqueue": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetUiPrintqueue()
-		},
-		"ui_report": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetUiReport()
-		},
-		"ui_userconfig": func(data *pb.ResponseGet_Value) interface{} {
-			return data.GetUiUserconfig()
-		},
+func (rpc *RpcClient) Get(token string, options map[string]interface{}) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
 	}
 
 	md := metadata.New(map[string]string{"authorization": "Bearer " + token})
@@ -445,22 +405,29 @@ func (rpc *RpcClient) Get(conn *grpc.ClientConn, token string, options map[strin
 	if ids, found := options["ids"].([]int64); found {
 		rpcIds = ids
 	}
-	response, err := pb.NewAPIClient(conn).Get(ctx, &pb.RequestGet{
+	response, err := pb.NewAPIClient(rpc.conn).Get(ctx, &pb.RequestGet{
 		Nervatype: pb.DataType(pb.DataType_value[ut.ToString(options["nervatype"], "")]),
 		Filter:    rpcFilter, Ids: rpcIds, Metadata: ut.ToBoolean(options["metadata"], false),
 	})
+	rpc.Close(false)
 	if err != nil {
 		return nil, err
 	}
 
-	results := make([]interface{}, 0)
-	for _, item := range response.Values {
-		results = append(results, itemMap[ut.ToString(options["nervatype"], "")](item))
+	msgJson, err := protojson.Marshal(response)
+	if err != nil {
+		return nil, err
 	}
-	return results, nil
+	var results map[string]interface{}
+	err = ut.ConvertFromByte(msgJson, &results)
+
+	return results["values"], err
 }
 
-func (rpc *RpcClient) Update(conn *grpc.ClientConn, token string, options map[string]interface{}) (interface{}, error) {
+func (rpc *RpcClient) Update(token string, options map[string]interface{}) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	md := metadata.New(map[string]string{"authorization": "Bearer " + token})
 	metaCtx := metadata.NewOutgoingContext(context.Background(), md)
 	ctx, cancel := context.WithTimeout(metaCtx, time.Second*30)
@@ -480,10 +447,11 @@ func (rpc *RpcClient) Update(conn *grpc.ClientConn, token string, options map[st
 			rpcItems = append(rpcItems, item)
 		}
 	}
-	response, err := pb.NewAPIClient(conn).Update(ctx, &pb.RequestUpdate{
+	response, err := pb.NewAPIClient(rpc.conn).Update(ctx, &pb.RequestUpdate{
 		Nervatype: pb.DataType(pb.DataType_value[ut.ToString(options["nervatype"], "")]),
 		Items:     rpcItems,
 	})
+	rpc.Close(false)
 	if err != nil {
 		return nil, err
 	}
@@ -496,16 +464,20 @@ func (rpc *RpcClient) Update(conn *grpc.ClientConn, token string, options map[st
 	return results, nil
 }
 
-func (rpc *RpcClient) Delete(conn *grpc.ClientConn, token string, options map[string]interface{}) (interface{}, error) {
+func (rpc *RpcClient) Delete(token string, options map[string]interface{}) (interface{}, error) {
+	if err := rpc.Connect(false); err != nil {
+		return nil, err
+	}
 	md := metadata.New(map[string]string{"authorization": "Bearer " + token})
 	metaCtx := metadata.NewOutgoingContext(context.Background(), md)
 	ctx, cancel := context.WithTimeout(metaCtx, time.Second*30)
 	defer cancel()
 
-	_, err := pb.NewAPIClient(conn).Delete(ctx, &pb.RequestDelete{
+	_, err := pb.NewAPIClient(rpc.conn).Delete(ctx, &pb.RequestDelete{
 		Nervatype: pb.DataType(pb.DataType_value[ut.ToString(options["nervatype"], "")]),
 		Id:        ut.ToInteger(options["id"], 0),
 		Key:       ut.ToString(options["key"], ""),
 	})
+	rpc.Close(false)
 	return nil, err
 }

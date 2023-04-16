@@ -13,18 +13,32 @@ import (
 
 	"github.com/joho/godotenv"
 	srv "github.com/nervatura/nervatura-examples/service"
-	ut "github.com/nervatura/nervatura/service/pkg/utils"
+	ut "github.com/nervatura/nervatura-examples/utils"
 	"github.com/slavamuravey/cors"
-	"google.golang.org/grpc"
 )
 
 type App struct {
-	rpc        *srv.RpcClient
-	cli        *srv.CliClient
-	http       *srv.HttpClient
+	apiMap     map[string]APIService
 	templates  map[string]*template.Template
 	sessions   map[string]string
 	privateKey string
+}
+
+type APIService interface {
+	DatabaseCreate(apiKey string, options map[string]interface{}) (interface{}, error)
+	UserLogin(options map[string]interface{}) (interface{}, error)
+	TokenLogin(token string) (interface{}, error)
+	TokenRefresh(token string) (interface{}, error)
+	UserPassword(token string, options map[string]interface{}) (interface{}, error)
+	Delete(token string, options map[string]interface{}) (interface{}, error)
+	Get(token string, options map[string]interface{}) (interface{}, error)
+	View(token string, data []map[string]interface{}) (interface{}, error)
+	Function(token string, options map[string]interface{}) (interface{}, error)
+	Update(token string, options map[string]interface{}) (interface{}, error)
+	Report(token string, options map[string]interface{}) (interface{}, error)
+	ReportList(token string, options map[string]interface{}) (interface{}, error)
+	ReportDelete(token string, options map[string]interface{}) (interface{}, error)
+	ReportInstall(token string, options map[string]interface{}) (interface{}, error)
 }
 
 //go:embed templates
@@ -37,9 +51,11 @@ func New() (err error) {
 	}
 
 	app := &App{
-		rpc:        &srv.RpcClient{},
-		cli:        &srv.CliClient{},
-		http:       &srv.HttpClient{},
+		apiMap: map[string]APIService{
+			"rpc":  &srv.RpcClient{},
+			"cli":  &srv.CliClient{},
+			"http": &srv.HttpClient{},
+		},
 		sessions:   make(map[string]string),
 		templates:  make(map[string]*template.Template),
 		privateKey: "",
@@ -131,102 +147,6 @@ func (app *App) createToken(username, database, kid, algorithm string) (token st
 		"NT_TOKEN_ALG":         algorithm,
 		"NT_TOKEN_PRIVATE_KEY": app.privateKey,
 	})
-}
-
-func (app *App) getAPI(apiFunc, apiType, secret string, options interface{}) (interface{}, error) {
-	var conn *grpc.ClientConn
-	var err error
-	apiMap := map[string]map[string]func() (interface{}, error){
-		"DatabaseCreate": {
-			"rpc": func() (interface{}, error) {
-				return app.rpc.DatabaseCreate(conn, secret, options.(map[string]interface{}))
-			},
-			"cli": func() (interface{}, error) {
-				return app.cli.DatabaseCreate(secret, options.(map[string]interface{}))
-			},
-			"http": func() (interface{}, error) {
-				return app.http.DatabaseCreate(secret, options.(map[string]interface{}))
-			},
-		},
-		"View": {
-			"rpc": func() (interface{}, error) {
-				return app.rpc.View(conn, secret, options.([]map[string]interface{}))
-			},
-			"cli": func() (interface{}, error) {
-				return app.cli.View(secret, options.([]map[string]interface{}))
-			},
-			"http": func() (interface{}, error) {
-				return app.http.View(secret, options.([]map[string]interface{}))
-			},
-		},
-		"Update": {
-			"rpc": func() (interface{}, error) {
-				return app.rpc.Update(conn, secret, options.(map[string]interface{}))
-			},
-			"cli": func() (interface{}, error) {
-				return app.cli.Update(secret, options.(map[string]interface{}))
-			},
-			"http": func() (interface{}, error) {
-				return app.http.Update(secret, options.(map[string]interface{}))
-			},
-		},
-		"Report": {
-			"rpc": func() (interface{}, error) {
-				return app.rpc.Report(conn, secret, options.(map[string]interface{}))
-			},
-			"cli": func() (interface{}, error) {
-				return app.cli.Report(secret, options.(map[string]interface{}))
-			},
-			"http": func() (interface{}, error) {
-				return app.http.Report(secret, options.(map[string]interface{}))
-			},
-		},
-		"TokenLogin": {
-			"rpc": func() (interface{}, error) {
-				return app.rpc.TokenLogin(conn, secret)
-			},
-			"cli": func() (interface{}, error) {
-				return app.cli.TokenLogin(secret)
-			},
-			"http": func() (interface{}, error) {
-				return app.http.TokenValidate(secret)
-			},
-		},
-		"UserLogin": {
-			"rpc": func() (interface{}, error) {
-				return app.rpc.UserLogin(conn, options.(map[string]interface{}))
-			},
-			"cli": func() (interface{}, error) {
-				return app.cli.UserLogin(options.(map[string]interface{}))
-			},
-			"http": func() (interface{}, error) {
-				return app.http.UserLogin(options.(map[string]interface{}))
-			},
-		},
-		"Function": {
-			"rpc": func() (interface{}, error) {
-				return app.rpc.Function(conn, secret, options.(map[string]interface{}))
-			},
-			"cli": func() (interface{}, error) {
-				return app.cli.Function(secret, options.(map[string]interface{}))
-			},
-			"http": func() (interface{}, error) {
-				return app.http.Function(secret, options.(map[string]interface{}))
-			},
-		},
-	}
-
-	if apiType == "rpc" {
-		conn, err = app.rpc.Connect()
-		if err != nil {
-			return nil, err
-		}
-	}
-	result, err := apiMap[apiFunc][apiType]()
-	if apiType == "rpc" {
-		conn.Close()
-	}
-	return result, err
 }
 
 func (app *App) sendRequest(w http.ResponseWriter, code int, payload interface{}) {

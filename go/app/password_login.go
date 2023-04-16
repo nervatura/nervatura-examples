@@ -37,7 +37,7 @@ func (app *App) passwordLogin(w http.ResponseWriter, r *http.Request) {
 			}
 			data[key] = r.PostForm.Get(key)
 		}
-		data["result"], err = app.getAPI("UserLogin", api_type, "", options)
+		data["result"], err = app.apiMap[api_type].UserLogin(options)
 		if err != nil {
 			data["error"] = err.Error()
 		}

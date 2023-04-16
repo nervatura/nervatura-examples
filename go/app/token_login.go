@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	ut "github.com/nervatura/nervatura/service/pkg/utils"
+	ut "github.com/nervatura/nervatura-examples/utils"
 )
 
 func (app *App) tokenLogin(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +44,7 @@ func (app *App) tokenLogin(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			data["error"] = err.Error()
 		} else {
-			data["result"], err = app.getAPI("TokenLogin", data["api_type"].(string), token, nil)
+			data["result"], err = app.apiMap[data["api_type"].(string)].TokenLogin(token)
 			if err != nil {
 				data["error"] = err.Error()
 			}

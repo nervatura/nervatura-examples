@@ -1,7 +1,7 @@
 /*
 This file is part of the Nervatura Framework
 http://nervatura.com
-Copyright © 2011-2022, Csaba Kappel
+Copyright © 2011-2023, Csaba Kappel
 License: LGPLv3
 https://raw.githubusercontent.com/nervatura/nervatura/master/LICENSE
 */

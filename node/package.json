@@ -10,8 +10,8 @@
   "author": "Csaba Kappel <csaba.kappel@nervatura.com> (http://nervatura.com)",
   "license": "LGPL-3.0",
   "dependencies": {
-    "@grpc/grpc-js": "^1.8.12",
-    "@grpc/proto-loader": "^0.7.5",
+    "@grpc/grpc-js": "^1.8.14",
+    "@grpc/proto-loader": "^0.7.6",
     "async": "^3.2.4",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",

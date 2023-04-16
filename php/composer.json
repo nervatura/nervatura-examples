@@ -1,0 +1,25 @@
+{
+    "name": "nervatura/examples",
+    "description": "Nervatura PHP examples",
+    "type": "project",
+    "require": {
+        "bcosca/fatfree-core": "^3.8",
+        "vlucas/phpdotenv": "^4.1",
+        "grpc/grpc": "^v1.39.0",
+        "google/protobuf": "^v3.22.2",
+        "firebase/php-jwt": "^6.4"
+    },
+    "license": "LGPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Csaba Kappel",
+            "email": "csaba.kappel@nervatura.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Nervatura\\": "nervatura/Nervatura/",
+            "GPBMetadata\\": "nervatura/GPBMetadata/"
+        }
+    }
+}

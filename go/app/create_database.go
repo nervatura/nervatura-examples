@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	ut "github.com/nervatura/nervatura/service/pkg/utils"
+	ut "github.com/nervatura/nervatura-examples/utils"
 )
 
 func (app *App) createDatabase(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +39,7 @@ func (app *App) createDatabase(w http.ResponseWriter, r *http.Request) {
 			}
 			data[key] = r.PostForm.Get(key)
 		}
-		data["result"], err = app.getAPI("DatabaseCreate", api_type, ut.ToString(data["api_key"], ""), options)
+		data["result"], err = app.apiMap[api_type].DatabaseCreate(ut.ToString(data["api_key"], ""), options)
 		if err != nil {
 			data["error"] = err.Error()
 		}

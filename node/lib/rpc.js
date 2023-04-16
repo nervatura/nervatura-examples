@@ -1,7 +1,7 @@
 /*
 This file is part of the Nervatura Framework
 http://nervatura.com
-Copyright © 2011-2022, Csaba Kappel
+Copyright © 2011-2023, Csaba Kappel
 License: LGPLv3
 https://raw.githubusercontent.com/nervatura/nervatura/master/LICENSE
 */
@@ -156,9 +156,9 @@ exports.Get = function(token, options, callback) {
   var meta = new grpc.Metadata();
   meta.add('Authorization', `Bearer ${token}`);
   var rpcOptions = {
-    nervatype: nervatura.DataType.type.value.filter(dtype => (dtype.name === options.datatype))[0].number,
+    nervatype: nervatura.DataType.type.value.filter(dtype => (dtype.name === options.nervatype))[0].number,
     metadata: options.metadata,
-    ids: options.ids,
+    ids: (typeof(options.ids) === "string") ? String(options.ids).split(",") : options.ids,
     filter: options.filter
   }
   rpcClient("Get", meta, rpcOptions, function(err, data){

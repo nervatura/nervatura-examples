@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	ut "github.com/nervatura/nervatura/service/pkg/utils"
+	ut "github.com/nervatura/nervatura-examples/utils"
 )
 
 func (app *App) createInvoiceData(apiType, token string, invoiceData map[string]interface{}) (transID int64, err error) {
@@ -30,7 +30,7 @@ func (app *App) createInvoiceData(apiType, token string, invoiceData map[string]
 			"values": []interface{}{invoiceData["customer"].(map[string]interface{})["custnumber"]},
 		},
 	}
-	viewResult, err := app.getAPI("View", apiType, token, views)
+	viewResult, err := app.apiMap[apiType].View(token, views)
 	if err != nil {
 		return 0, err
 	}
@@ -40,7 +40,7 @@ func (app *App) createInvoiceData(apiType, token string, invoiceData map[string]
 			// existing customer
 			customer["keys"].(map[string]interface{})["id"] = customer["custnumber"]
 		}
-		_, err := app.getAPI("Update", apiType, token, map[string]interface{}{
+		_, err := app.apiMap[apiType].Update(token, map[string]interface{}{
 			"nervatype": "customer", "data": []map[string]interface{}{customer}})
 		if err != nil {
 			return 0, err
@@ -60,7 +60,7 @@ func (app *App) createInvoiceData(apiType, token string, invoiceData map[string]
 				"ref_id":    "customer/" + ut.ToString(invoiceData["customer"].(map[string]interface{})["custnumber"], ""),
 			}
 		}
-		_, err := app.getAPI("Update", apiType, token, map[string]interface{}{
+		_, err := app.apiMap[apiType].Update(token, map[string]interface{}{
 			"nervatype": "address", "data": address})
 		if err != nil {
 			return 0, err
@@ -80,7 +80,7 @@ func (app *App) createInvoiceData(apiType, token string, invoiceData map[string]
 				"ref_id":    "customer/" + ut.ToString(invoiceData["customer"].(map[string]interface{})["custnumber"], ""),
 			}
 		}
-		_, err := app.getAPI("Update", apiType, token, map[string]interface{}{
+		_, err := app.apiMap[apiType].Update(token, map[string]interface{}{
 			"nervatype": "contact", "data": contact})
 		if err != nil {
 			return 0, err
@@ -88,7 +88,7 @@ func (app *App) createInvoiceData(apiType, token string, invoiceData map[string]
 	}
 
 	if trans, found := invoiceData["trans"].(map[string]interface{}); found {
-		result, err := app.getAPI("Update", apiType, token, map[string]interface{}{
+		result, err := app.apiMap[apiType].Update(token, map[string]interface{}{
 			"nervatype": "trans", "data": []map[string]interface{}{trans}})
 		if err != nil {
 			return 0, err
@@ -100,13 +100,12 @@ func (app *App) createInvoiceData(apiType, token string, invoiceData map[string]
 		for _, item := range items {
 			item["trans_id"] = transID
 		}
-		_, err := app.getAPI("Update", apiType, token, map[string]interface{}{
+		_, err := app.apiMap[apiType].Update(token, map[string]interface{}{
 			"nervatype": "item", "data": items})
 		if err != nil {
 			return 0, err
 		}
 	}
-
 	return transID, nil
 }
 
@@ -240,7 +239,7 @@ func (app *App) invoicePDF(w http.ResponseWriter, r *http.Request) {
 		"filters":     map[string]interface{}{"@id": ut.ToInteger(params[1], 0)},
 	}
 	if token, found := app.sessions["invoice_token"]; found {
-		result, err := app.getAPI("Report", ut.ToString(params[0], ""), token, options)
+		result, err := app.apiMap[ut.ToString(params[0], "")].Report(token, options)
 		if err == nil {
 			contentStr := ""
 			if ut.ToString(params[0], "") == "http" {

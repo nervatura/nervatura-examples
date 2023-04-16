@@ -1,7 +1,7 @@
 """ 
 This file is part of the Nervatura Framework
 http://nervatura.com
-Copyright © 2011-2022, Csaba Kappel
+Copyright © 2011-2023, Csaba Kappel
 License: LGPLv3
 https://raw.githubusercontent.com/nervatura/nervatura/master/LICENSE 
 """
@@ -33,7 +33,7 @@ def decodeValue(values):
 
 def encodeValue(value):
     if type(value) == bool:
-        return pb.Value(bolean=value)
+        return pb.Value(boolean=value)
     if type(value) in(int, float):
         return pb.Value(number=float(value))
     if type(value) == list:
@@ -241,6 +241,10 @@ def View(token, data):
 
 def Get(token, options):
     metadata = [("authorization", "Bearer "+token)]
+    if type(options["ids"]) == str:
+        options["ids"] = options["ids"].split(",")
+        for idx, value in enumerate(options["ids"]):
+            options["ids"][idx] = int(value)
     try:
         response = client().Get(pb.RequestGet(
             nervatype=pb.DataType.values()[pb.DataType.keys().index(options["nervatype"])],
@@ -299,11 +303,15 @@ def Update(token, options):
 
 def Delete(token, options):
     metadata = [("authorization", "Bearer "+token)]
+    req = pb.RequestDelete(
+        nervatype=pb.DataType.values()[pb.DataType.keys().index(options["nervatype"])],
+    )
+    if "id" in options:
+        req.id = int(options["id"])
+    if "key" in options:
+        req.key  = options["key"]
     try:
-        client().Delete(pb.RequestDelete(
-            nervatype=pb.DataType.values()[pb.DataType.keys().index(options["nervatype"])],
-            id=options["id"], key=options["key"]
-        ), metadata=metadata)
+        client().Delete(req, metadata=metadata)
     except grpc.RpcError as err:
         return [None, err.details()]
     except:

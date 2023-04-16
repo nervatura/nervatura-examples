@@ -4,9 +4,10 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
-	ut "github.com/nervatura/nervatura/service/pkg/utils"
+	ut "github.com/nervatura/nervatura-examples/utils"
 )
 
 type CliClient struct{}
@@ -83,6 +84,16 @@ func (cli *CliClient) Delete(token string, options map[string]interface{}) (inte
 }
 
 func (cli *CliClient) Get(token string, options map[string]interface{}) (interface{}, error) {
+	if ids, found := options["ids"].([]int64); found {
+		var sIds []string
+		for _, id := range ids {
+			sIds = append(sIds, strconv.Itoa(int(id)))
+		}
+		options["ids"] = strings.Join(sIds, ",")
+	}
+	if filter, found := options["filter"].([]string); found {
+		options["filter"] = strings.Join(filter, "|")
+	}
 	return cli.tokenOptions("Get", token, "-o", options)
 }
 

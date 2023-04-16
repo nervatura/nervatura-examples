@@ -1,7 +1,7 @@
 /*
 This file is part of the Nervatura Framework
 http://nervatura.com
-Copyright © 2011-2022, Csaba Kappel
+Copyright © 2011-2023, Csaba Kappel
 License: LGPLv3
 https://raw.githubusercontent.com/nervatura/nervatura/master/LICENSE
 */
@@ -79,7 +79,9 @@ exports.CreateToken = function(params) {
 }
 
 exports.StartService = function(consolLog, callback){
-  const child = spawn(path.join(servicePath, serviceFile), { env: { ...process.env } });
+  const controller = new AbortController();
+  const { signal } = controller;
+  const child = spawn(path.join(servicePath, serviceFile), { env: { ...process.env }, signal });
   var result = false;
   child.stdout.on('data', (chunk) => {
     if(consolLog){
@@ -87,17 +89,19 @@ exports.StartService = function(consolLog, callback){
     }
     if(!result){
       result = true
-      callback(null)
+      callback(null, controller)
     } 
   });
   child.stderr.on('data', function(err) {
     if(!result){
       result = true
-      callback(err)
+      callback(err, controller)
     }
   });
   child.on('error', function (err) {
-    callback(err)
+    if(!result){
+      callback(err, controller)
+    }
   });
 }
 

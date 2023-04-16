@@ -1,0 +1,116 @@
+<style>
+  .results {
+    word-break: break-all;
+  }
+</style>
+<script>
+  function onSubmit(){
+    return(showLoader(true));
+  }
+</script>
+<div class="w3-sand w3-topbar w3-bottombar w3-border-gray" >
+  <div class="w3-cell-row" >
+    <repeat group="{{ @env }}" key="{{ @ekey }}" value="{{ @evalue }}">
+      <div class="w3-cell w3-left w3-padding-small w3-small">
+        <span class="w3-tag w3-light-grey w3-border"><b>{{ @ekey }}</b></span>
+        <span class="w3-tag w3-white w3-border">{{ @evalue }}</span>
+      </div>
+    </repeat>
+  </div>
+</div>
+
+<div class="w3-card w3-round w3-section" style="max-width: 800px;margin: auto;">
+  <div class="w3-cell-row w3-dark-gray">
+    <div class="w3-cell w3-padding">
+      <label><b>{{ @title }}</b></label>
+    </div>
+  </div>
+  <div class="w3-light-grey" style="padding: 8px 0px;">
+    <div class="w3-cell-row">
+      <div class="w3-cell">
+        <form action="/create_database" method="post" onsubmit="onSubmit();" >
+          <div class="w3-cell-row w3-padding-small">
+            <div class="w3-cell w3-padding-small">
+              <label><b>API-KEY</b></label>
+              <input name="api_key" class="w3-input w3-border w3-round" 
+                type="text" value="{{ @api_key }}" required>
+            </div>
+          </div>
+          <div class="w3-cell-row w3-padding-small">
+            <div class="w3-cell w3-padding-small">
+              <label><b>Alias name</b></label>
+              <input name="alias" class="w3-input w3-border w3-round" 
+                type="text" value="{{ @alias }}" required>
+            </div>
+          </div>
+          <div class="w3-cell-row w3-padding-small">
+            <div class="w3-cell w3-padding-small">
+              <label><b>Demo database</b></label>
+              <select class="w3-select w3-round" name="demo">
+                <option value="true" {{ @demo=='true'?'selected="selected"':'' }}>TRUE</option>
+                <option value="false" {{ @demo=='false'?'selected="selected"':'' }}>FALSE</option>
+              </select>
+            </div>
+          </div>
+          <div class="w3-cell-row w3-padding-small w3-border-top w3-border-bottom">
+            <div class="w3-cell w3-padding-small" style="width: 110px;">
+              <label class="w3-text-blue"><b>API type</b></label>
+            </div>
+            <div class="w3-cell w3-padding-small">
+              <select class="w3-select w3-round" name="api_type">
+                <repeat group="{{ @api_values }}" value="{{ @api }}">
+                  <option value="{{ @api }}" {{ @api_type==@api?'selected="selected"':'' }}>{{ strtoupper(@api) }}</option>
+                </repeat>
+              </select>
+            </div>
+            <div class="w3-cell w3-padding">
+              <input type="submit" value="Create" 
+                class="w3-button w3-black w3-round" style="font-weight: bold;" 
+              />
+            </div>
+          </div>
+          <check if="{{ @error }}">
+            <div class="w3-cell-row w3-padding w3-sand">
+              <label class="w3-text-red"><b>&#9785; {{ @error }}</b></label>
+            </div>
+          </check>
+          <check if="{{ @result }}">
+            <div class="w3-container w3-section" >
+              <div class="results">
+                <repeat group="{{ @result }}" value="{{ @row }}">
+                  <div class="w3-padding-small w3-small w3-white">
+                    <check if="{{ array_key_exists('stamp', $row) }}">
+                      <div {{ @row['state']=='err'?'class="w3-text-red"':'' }}>
+                        {{ @row['stamp'] }}
+                      </div>
+                    </check>
+                    <check if="{{ array_key_exists('message', $row) }}">
+                      <span {{ @row['state']=='err'?'class="w3-text-red"':'' }}>
+                        {{ @row['message'] }}
+                      </span>
+                    </check>
+                    <check if="{{ array_key_exists('section', $row) }}">
+                      <span {{ @row['state']=='err'?'class="w3-text-red"':'' }}>
+                        {{ @row['section'] }}
+                      </span>
+                    </check>
+                    <check if="{{ array_key_exists('datatype', $row) }}">
+                      <span {{ @row['state']=='err'?'class="w3-text-red"':'' }}>
+                        {{ @row['datatype'] }}
+                      </span>
+                    </check>
+                    <check if="{{ array_key_exists('result', $row) }}">
+                      <div {{ @row['state']=='err'?'class="w3-text-red"':'' }}>
+                        {{ @row['result'] }}
+                      </div>
+                    </check>
+                  </div>
+                </repeat>
+                </div>
+            </div>
+          </check>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
