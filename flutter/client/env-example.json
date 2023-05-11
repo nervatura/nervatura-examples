@@ -1,0 +1,7 @@
+{
+  "NT_EXAMPLE_HOST": "localhost",
+  "NT_EXAMPLE_PORT": "8000",
+  "NT_TOKEN_PUBLIC_KEY": "../data/public.key",
+  "NT_ALIAS_DEMO": "sqlite://file:../data/demo.db?cache=shared&mode=rwc",
+  "NT_EXAMPLE_TOKEN_PRIVATE_KEY": "../data/private.key"
+}

@@ -1,0 +1,39 @@
+name: flutter_client
+description: Nervatura Examples Flutter client.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.19.6 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_dotenv: ^5.0.2
+  flutter_localizations:
+    sdk: flutter
+  http: ^0.13.6
+  provider: ^6.0.5
+  shared_preferences: ^2.1.0
+  dart_jsonwebtoken: ^2.7.1
+  url_launcher: ^6.1.10
+  services:
+    path: ../services
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Enable generation of localized Strings from arb files.
+  generate: true
+
+  assets:
+    # Add assets from the images directory to the application.
+    - assets/images/

@@ -10,6 +10,7 @@
 - Python/FastAPI
 - Go
 - PHP/Fat-Free
+- Flutter and Dart
 
 ## **Examples**
 
