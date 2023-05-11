@@ -26,6 +26,7 @@ import 'controllers/create_database.dart';
 import 'controllers/create_invoice.dart';
 import 'controllers/home.dart';
 import 'controllers/password_login.dart';
+import 'controllers/server_shortcuts.dart';
 import 'controllers/token_login.dart';
 import 'widgets/all_api.dart';
 import 'widgets/client_login.dart';
@@ -33,6 +34,7 @@ import 'widgets/create_database.dart';
 import 'widgets/create_invoice.dart';
 import 'widgets/home.dart';
 import 'widgets/password_login.dart';
+import 'widgets/server_shortcuts.dart';
 import 'widgets/token_login.dart';
 
 class AppState with ChangeNotifier {
@@ -61,7 +63,8 @@ class AppState with ChangeNotifier {
     'backend': false,
   };
 
-  bool demoDb = false;
+  bool _demoDb = false;
+  bool get demoDb => (desktop) ? File('../data/demo.db').existsSync() : _demoDb;
 
   String get serverHost => _host;
   String get serverPort => _port;
@@ -151,7 +154,6 @@ class AppState with ChangeNotifier {
       enabledService['rpc'] = false;
     }
 
-    demoDb = File('../data/demo.db').existsSync();
     serverConfig(true);
     notifyListeners();
   }
@@ -172,7 +174,7 @@ class AppState with ChangeNotifier {
           for (var skey in result['enabledService'].keys.toList()) {
             enabledService[skey] = result['enabledService'][skey];
           }
-          demoDb = result['demoDb'];
+          _demoDb = result['demoDb'];
           serverReady['backend'] = true;
           serverReady['ntura'] = result['enabledService']['http'];
         }
@@ -330,6 +332,11 @@ class App extends StatelessWidget {
                 return ChangeNotifierProvider(
                   create: (_) => CreateInvoiceController(context),
                   child: const CreateInvoiceWidget(),
+                );
+              case ServerShortcutsWidget.routeName:
+                return ChangeNotifierProvider(
+                  create: (_) => ServerShortcutsController(context),
+                  child: const ServerShortcutsWidget(),
                 );
               case HomeWidget.routeName:
               default:

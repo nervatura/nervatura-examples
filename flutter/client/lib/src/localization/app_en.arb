@@ -40,5 +40,8 @@
   "clientToken": "Client token callback url (Dart backend)",
   "createInvoice": "Create an invoice",
   "invoiceDownload": "Invoice PDF download",
-  "newInvoice": "New invoice id:"
+  "newInvoice": "New invoice id:",
+  "serverShortcuts": "Nervatura Client menu shortcuts",
+  "menuExist": "Shortcuts already exist. Try it under the BACK OFFICE / SERVER SHORTCUTS menu!",
+  "clientOpen": "Nervatura Client"
 }

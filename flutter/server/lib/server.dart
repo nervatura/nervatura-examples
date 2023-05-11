@@ -27,6 +27,8 @@ final _router = Router()
   ..post('/service/<api>/<func>', _serviceHandler)
   ..post('/token', _tokenHandler)
   ..get('/client_logout', _clientLogoutHandler)
+  ..get('/server_shortcuts/homepage', _homepageHandler)
+  ..post('/server_shortcuts/email', _emailHandler)
   ..get('/invoice/<api>/<database>/<username>/<id>', _invoiceHandler)
   ..get('/code', _clientCodeHandler);
 
@@ -218,6 +220,78 @@ Future<Response> _clientLogoutHandler(Request request) async {
 
 Future<Response> _clientCodeHandler(Request request) async {
   return Response.ok(loginCode);
+}
+
+Future<Response> _homepageHandler(Request request) async {
+  return Response.ok(json.encode(request.requestedUri.queryParameters));
+}
+
+Future<Response> _emailHandler(Request request) async {
+  final data = json.decode(await request.readAsString());
+  if ((!data['values'].containsKey('email_from')) ||
+      (!data['values']['email_from'].toString().contains('@'))) {
+    return Response.badRequest(
+        body: json.encode({
+      'code': 400,
+      'error': {'message': 'Invalid sender address'}
+    }));
+  }
+
+  if ((!data['values'].containsKey('email_to')) ||
+      (!data['values']['email_to'].toString().contains('@'))) {
+    return Response.badRequest(
+        body: json.encode({
+      'code': 400,
+      'error': {'message': 'Invalid email address'}
+    }));
+  }
+
+  if ((env['NT_SMTP_HOST'] == 'EXAMPLE_SMTP_HOST') ||
+      (env['NT_SMTP_USER'] == 'EXAMPLE_SMTP_USER') ||
+      (env['NT_SMTP_PASSWORD'] == 'EXAMPLE_SMTP_PASSWORD')) {
+    return Response.badRequest(
+        body: json.encode({
+      'code': 400,
+      'error': {'message': 'Invalid SMTP settings'}
+    }));
+  }
+
+  Map<String, dynamic> params = {
+    'key': 'sendEmail',
+    'values': {
+      'provider': 'smtp',
+      'email': {
+        'from': data['values']['email_from'].toString(),
+        'recipients': [
+          {'email': data['values']['email_to'].toString()},
+        ],
+        'subject': 'Thank you for your order',
+        'html': '<p>Thank you for your order!</p><b>Please</b> note: ...',
+        'attachments': [
+          {
+            'reportkey': 'ntr_invoice_en',
+            'nervatype': 'trans',
+            'refnumber': 'DMINV/00001'
+          }
+        ]
+      }
+    }
+  };
+  final token = createToken(tokenParams('demo', 'admin'));
+  final client = clients['http']!(conf);
+  final clientFunc = serviceFunctions['function']!(client);
+  Map<String, dynamic> result = await clientFunc(token, params);
+  await client.close();
+
+  if (result.containsKey('error')) {
+    return Response.badRequest(
+        body: json.encode({
+      'code': 400,
+      'error': {'message': result['error']}
+    }));
+  }
+
+  return Response.ok('The message was successfully sent');
 }
 
 void main(List<String> args) async {
