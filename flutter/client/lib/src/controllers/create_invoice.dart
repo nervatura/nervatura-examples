@@ -198,14 +198,20 @@ class CreateInvoiceController with ChangeNotifier {
       },
       {
         'key': "address",
-        'text':
-            "select count(*) as anum from address a inner join groups g on a.nervatype=g.id and g.groupvalue='customer' inner join customer c on a.ref_id=c.id where c.custnumber=?",
+        'text': """select count(*) as anum 
+            from address a 
+            inner join groups g on a.nervatype=g.id and g.groupvalue='customer' 
+            inner join customer c on a.ref_id=c.id 
+            where c.custnumber=?""",
         'values': viewValues,
       },
       {
         'key': "contact",
-        'text':
-            "select count(*) as anum from contact co inner join groups g on co.nervatype=g.id and g.groupvalue='customer' inner join customer c on co.ref_id=c.id where c.custnumber=?",
+        'text': """select count(*) as anum 
+            from contact co 
+            inner join groups g on co.nervatype=g.id and g.groupvalue='customer' 
+            inner join customer c on co.ref_id=c.id 
+            where c.custnumber=?""",
         'values': viewValues,
       }
     ];

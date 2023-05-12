@@ -43,5 +43,7 @@
   "newInvoice": "New invoice id:",
   "serverShortcuts": "Nervatura Client menu shortcuts",
   "menuExist": "Shortcuts already exist. Try it under the BACK OFFICE / SERVER SHORTCUTS menu!",
-  "clientOpen": "Nervatura Client"
+  "clientOpen": "Nervatura Client",
+  "csvReport": "CSV Report Example",
+  "reportExist": "CSV report already exist. Try it under the REPORT menu!"
 }

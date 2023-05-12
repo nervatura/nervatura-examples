@@ -15,21 +15,29 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../app.dart';
 
-class ServerShortcutsController with ChangeNotifier {
+class CsvReportController with ChangeNotifier {
   final BuildContext context;
 
-  ServerShortcutsController(this.context) {
+  CsvReportController(this.context) {
     loc = AppLocalizations.of(context)!;
     app = context.watch<AppState>();
     _apiType = app.enabledService.keys.toList()[0];
-    _menuData['ui_menu'][0]['address'] =
-        'http://${app.serverHost}:${app.serverPort}/server_shortcuts/homepage';
-    _menuData['ui_menu'][1]['address'] =
-        'http://${app.serverHost}:${app.serverPort}/server_shortcuts/email';
-    menuCtr.text =
-        const JsonEncoder.withIndent('  ').convert(_menuData['ui_menu']);
-    fieldsCtr.text =
-        const JsonEncoder.withIndent('  ').convert(_menuData['ui_menufields']);
+    _reportData = {
+      'ui_report': [
+        {
+          'reportkey': _reportTemplate['meta']['reportkey'],
+          'repname': _reportTemplate['meta']['repname'],
+          'description': _reportTemplate['meta']['description'],
+          'label': _reportTemplate['meta']['label'],
+          'report': jsonEncode(_reportTemplate),
+          'keys': {
+            'nervatype': _reportTemplate['meta']['nervatype'],
+            'filetype': _reportTemplate['meta']['filetype']
+          }
+        }
+      ]
+    };
+    reportCtr.text = const JsonEncoder.withIndent('  ').convert(_reportData);
     checkFunctions();
   }
   late AppLocalizations loc;
@@ -38,12 +46,12 @@ class ServerShortcutsController with ChangeNotifier {
   String labels(String key) {
     Map<String, String> labels = {
       'appTitle': loc.appTitle,
-      'serverShortcuts': loc.serverShortcuts,
+      'csvReport': loc.csvReport,
       'username': loc.username,
       'create': loc.create,
       'database': loc.database,
       'apiType': loc.apiType,
-      "menuExist": loc.menuExist,
+      "reportExist": loc.reportExist,
       'ntura': loc.ntura,
       'backend': loc.backend,
       'clientOpen': loc.clientOpen,
@@ -66,75 +74,69 @@ class ServerShortcutsController with ChangeNotifier {
           'NT_TOKEN_PUBLIC_KID': app.env['NT_TOKEN_PUBLIC_KID'].toString(),
           'NT_TOKEN_PUBLIC_KEY': app.env['NT_TOKEN_PUBLIC_KEY'].toString(),
           'NT_ALIAS_DEMO': app.env['NT_ALIAS_DEMO'].toString(),
-          'NT_SMTP_HOST': app.env['NT_SMTP_HOST'].toString(),
-          'NT_SMTP_PORT': app.env['NT_SMTP_PORT'].toString(),
-          'NT_SMTP_USER': app.env['NT_SMTP_USER'].toString(),
-          'NT_SMTP_PASSWORD': app.env['NT_SMTP_PASSWORD'].toString()
         }
       : {};
 
-  final Map<String, dynamic> _menuData = {
-    'ui_menu': [
+  final Map<String, dynamic> _reportTemplate = {
+    'meta': {
+      'reportkey': 'csv_example_report',
+      'nervatype': 'report',
+      'repname': 'CSV Report Example',
+      'description': 'Customer contacts',
+      'label': 'Customer',
+      'filetype': 'csv'
+    },
+    'details': [
       {
-        'menukey': 'mnu_example_homepage',
-        'description': 'External page - GET example',
-        'funcname': 'homepage',
-        'address': '',
-        'keys': {'method': 'get'}
-      },
-      {
-        'menukey': 'mnu_example_email',
-        'description': 'Email sending - POST example',
-        'funcname': 'email',
-        'address': '',
-        'keys': {'method': 'post'}
-      },
+        'columns': [
+          'custname',
+          'firstname',
+          'surname',
+          'status',
+          'phone',
+          'email'
+        ],
+        'name': 'contact',
+        'databind': 'contact'
+      }
     ],
-    'ui_menufields': [
-      {
-        'fieldname': 'homepage_string',
-        'description': 'String input',
-        'orderby': 0,
-        'keys': {'menu_id': 'mnu_example_homepage', 'fieldtype': 'string'}
+    'sources': {
+      'contact': {
+        'default':
+            """select c.custname as custname, co.firstname as firstname, co.surname as surname, co.status as status, co.phone as phone, co.email as email
+      from contact co
+      inner join groups nt on co.nervatype=nt.id and nt.groupvalue='customer'
+      inner join customer c on co.ref_id=c.id
+      where co.deleted = 0 and c.deleted=0 @where_str"""
+      }
+    },
+    'fields': {
+      'custname': {
+        'fieldtype': 'string',
+        'wheretype': 'where',
+        'description': 'Customer Name',
+        'orderby': 0
       },
-      {
-        'fieldname': 'homepage_bool',
-        'description': 'Bool input',
-        'orderby': 1,
-        'keys': {'menu_id': 'mnu_example_homepage', 'fieldtype': 'bool'}
+      'surname': {
+        'fieldtype': 'string',
+        'wheretype': 'where',
+        'description': 'Contact Surname',
+        'orderby': 1
       },
-      {
-        'fieldname': 'homepage_date',
-        'description': 'Date input',
-        'orderby': 2,
-        'keys': {'menu_id': 'mnu_example_homepage', 'fieldtype': 'date'}
-      },
-      {
-        'fieldname': 'homepage_integer',
-        'description': 'Integer input',
-        'orderby': 3,
-        'keys': {'menu_id': 'mnu_example_homepage', 'fieldtype': 'integer'}
-      },
-      {
-        'fieldname': 'homepage_float',
-        'description': 'Float input',
-        'orderby': 4,
-        'keys': {'menu_id': 'mnu_example_homepage', 'fieldtype': 'float'}
-      },
-      {
-        'fieldname': 'email_from',
-        'description': 'Sender email',
-        'orderby': 0,
-        'keys': {'menu_id': 'mnu_example_email', 'fieldtype': 'string'}
-      },
-      {
-        'fieldname': 'email_to',
-        'description': 'Email address',
-        'orderby': 1,
-        'keys': {'menu_id': 'mnu_example_email', 'fieldtype': 'string'}
-      },
-    ],
+    },
+    'data': {
+      'labels': {
+        'custname': 'Customer',
+        'firstname': 'Firstname',
+        'surname': 'surname',
+        'status': 'Status',
+        'phone': 'Phone',
+        'email': 'Email'
+      }
+    }
   };
+
+  Map<String, dynamic> _reportData = {};
 
   TextEditingController usernameCtr = TextEditingController(text: 'admin');
   String get username => usernameCtr.value.text;
@@ -142,11 +144,8 @@ class ServerShortcutsController with ChangeNotifier {
   TextEditingController databaseCtr = TextEditingController(text: 'demo');
   String get database => databaseCtr.value.text;
 
-  TextEditingController menuCtr = TextEditingController(text: '');
-  String get menu => menuCtr.value.text;
-
-  TextEditingController fieldsCtr = TextEditingController(text: '');
-  String get fields => fieldsCtr.value.text;
+  TextEditingController reportCtr = TextEditingController(text: '');
+  String get menu => reportCtr.value.text;
 
   late String _apiType;
   String get apiType => _apiType;
@@ -192,11 +191,11 @@ class ServerShortcutsController with ChangeNotifier {
     }
     final token = await app.getToken(username, database, false);
 
-    List<String> viewValues = ['mnu_example_homepage', 'mnu_example_email'];
+    List<String> viewValues = ['csv_example_report'];
     final views = [
       {
-        'key': 'menu',
-        'text': "select count(*) as anum from ui_menu where menukey in(?,?)",
+        'key': 'report',
+        'text': "select count(*) as anum from ui_report where reportkey in(?)",
         'values': viewValues,
       },
     ];
@@ -209,7 +208,7 @@ class ServerShortcutsController with ChangeNotifier {
     if (viewsResult.containsKey('error')) {
       error = viewsResult['error'];
     } else {
-      existing = (int.parse(viewsResult['result']['menu'][0]['anum']) > 0);
+      existing = (int.parse(viewsResult['result']['report'][0]['anum']) > 0);
     }
   }
 
@@ -226,24 +225,16 @@ class ServerShortcutsController with ChangeNotifier {
       return errorResult(loc.disabledService);
     }
 
-    Map<String, dynamic> menu = _menuData;
+    Map<String, dynamic> report = _reportData;
 
     final token = await app.getToken(username, database, false);
 
     final menuResult = await app.serviceData(apiType, 'update', [
       token,
-      {'nervatype': "ui_menu", 'data': menu['ui_menu']}
+      {'nervatype': "ui_report", 'data': report['ui_report']}
     ]);
     if (menuResult.containsKey('error')) {
       return errorResult(menuResult['error']);
-    }
-
-    final fieldsResult = await app.serviceData(apiType, 'update', [
-      token,
-      {'nervatype': "ui_menufields", 'data': menu['ui_menufields']}
-    ]);
-    if (fieldsResult.containsKey('error')) {
-      return errorResult(fieldsResult['error']);
     }
 
     existing = true;

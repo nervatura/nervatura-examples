@@ -24,6 +24,7 @@ import 'controllers/all_api.dart';
 import 'controllers/client_login.dart';
 import 'controllers/create_database.dart';
 import 'controllers/create_invoice.dart';
+import 'controllers/csv_report.dart';
 import 'controllers/home.dart';
 import 'controllers/password_login.dart';
 import 'controllers/server_shortcuts.dart';
@@ -32,6 +33,7 @@ import 'widgets/all_api.dart';
 import 'widgets/client_login.dart';
 import 'widgets/create_database.dart';
 import 'widgets/create_invoice.dart';
+import 'widgets/csv_report.dart';
 import 'widgets/home.dart';
 import 'widgets/password_login.dart';
 import 'widgets/server_shortcuts.dart';
@@ -337,6 +339,11 @@ class App extends StatelessWidget {
                 return ChangeNotifierProvider(
                   create: (_) => ServerShortcutsController(context),
                   child: const ServerShortcutsWidget(),
+                );
+              case CsvReportWidget.routeName:
+                return ChangeNotifierProvider(
+                  create: (_) => CsvReportController(context),
+                  child: const CsvReportWidget(),
                 );
               case HomeWidget.routeName:
               default:

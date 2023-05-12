@@ -34,6 +34,7 @@ class HomeController with ChangeNotifier {
     {'id': 'client_login', 'title': 'clientLogin'},
     {'id': 'create_invoice', 'title': 'createInvoice'},
     {'id': 'server_shortcuts', 'title': 'serverShortcuts'},
+    {'id': 'csv_report', 'title': 'csvReport'},
     {'id': 'all_api', 'title': 'allApi'},
   ];
 
@@ -52,6 +53,7 @@ class HomeController with ChangeNotifier {
       'clientLogin': loc.clientLogin,
       'createInvoice': loc.createInvoice,
       'serverShortcuts': loc.serverShortcuts,
+      'csvReport': loc.csvReport,
       'cli': 'CLI',
       'cgo': 'CGO',
       'rpc': 'GRPC',
