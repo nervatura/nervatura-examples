@@ -45,5 +45,7 @@
   "menuExist": "Shortcuts already exist. Try it under the BACK OFFICE / SERVER SHORTCUTS menu!",
   "clientOpen": "Nervatura Client",
   "csvReport": "CSV Report Example",
-  "reportExist": "CSV report already exist. Try it under the REPORT menu!"
+  "reportExist": "CSV report already exist. Try it under the REPORT menu!",
+  "externalToken": "Using external API for token based authentication",
+  "externalTokenTitle": "External token based authentication"
 }
