@@ -30,6 +30,7 @@ final _router = Router()
   ..get('/server_shortcuts/homepage', _homepageHandler)
   ..post('/server_shortcuts/email', _emailHandler)
   ..get('/invoice/<api>/<database>/<username>/<id>', _invoiceHandler)
+  ..get('/client_config', _clientConfigHandler)
   ..get('/code', _clientCodeHandler);
 
 late DotEnv env;
@@ -180,13 +181,12 @@ Future<Response> _tokenHandler(Request request) async {
   final data = json.decode(await request.readAsString());
   final code = data['code'].toString();
   if (codeMap.containsKey(code)) {
-    final host = InternetAddress.anyIPv4.host;
     final port = env['NT_EXAMPLE_PORT'] ?? '8080';
     return Response.ok(json.encode({
       'access_token': codeMap[code],
       'token_type': 'bearer',
       'expires_in': env['NT_EXAMPLE_TOKEN_EXP'].toString(),
-      'callback': 'http://$host:$port/client_logout'
+      'callback': 'http://$_host:$port/client_logout'
     }));
   } else if (code == loginCode) {
     final database = data['database'].toString();
@@ -220,6 +220,34 @@ Future<Response> _clientLogoutHandler(Request request) async {
 
 Future<Response> _clientCodeHandler(Request request) async {
   return Response.ok(loginCode);
+}
+
+Future<Response> _clientConfigHandler(Request request) async {
+  String resultHtml = '''
+<div style="display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; background-color: #fdf5e6; border: 1px solid #ccc;">
+  <div style="display: flex; gap: 5px;">
+    <div style="padding: 4px 8px; background-color: gainsboro; border: 1px solid #ccc;"><b>NT_CLIENT_CONFIG</b></div>
+    <div style="padding: 4px 8px; background-color: white; border: 1px solid #ccc;">${env['NT_CLIENT_CONFIG'].toString()}</div>
+  </div>
+  <div style="display: flex; gap: 5px;">
+    <div style="padding: 4px 8px; background-color: gainsboro; border: 1px solid #ccc;"><b>NT_ALIAS_DEMO</b></div>
+    <div style="padding: 4px 8px; background-color: white; border: 1px solid #ccc;">${env['NT_ALIAS_DEMO'].toString()}</div>
+  </div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 5px; height: 90%; width: 99%; margin-top: 8px;">
+  <div style="flex: 400px; height: 100%;">
+    <iframe src = "http://$_host:${env['NT_HTTP_PORT'].toString()}/client" style="height: 100%; width: 100%; border: none" frameborder="0">
+      Sorry your browser does not support inline frames.
+    </iframe>
+  </div>
+  <div style="flex: 400px; height: 100%;">
+    <iframe src = "http://$_host:${env['NT_HTTP_PORT'].toString()}/locales" style="height: 100%; width: 100%; border: none" frameborder="0">
+      Sorry your browser does not support inline frames.
+    </iframe>
+  </div>
+</div>
+''';
+  return Response.ok(resultHtml, headers: {'Content-Type': 'text/html'});
 }
 
 Future<Response> _homepageHandler(Request request) async {

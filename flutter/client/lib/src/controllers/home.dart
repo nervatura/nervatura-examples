@@ -27,12 +27,13 @@ class HomeController with ChangeNotifier {
     {
       'id': 'create_database',
       'title': 'createDatabase',
-      'subtitle': 'missingDemo'
+      'subtitle': 'missingDemo',
     },
     {'id': 'password_login', 'title': 'passwordLogin'},
     {'id': 'token_login', 'title': 'tokenLogin'},
     {'id': 'client_login', 'title': 'clientLogin'},
     {'id': 'external_token', 'title': 'externalToken'},
+    {'id': 'client_config', 'title': 'clientConfig', 'enabled': 'backend'},
     {'id': 'create_invoice', 'title': 'createInvoice'},
     {'id': 'server_shortcuts', 'title': 'serverShortcuts'},
     {'id': 'csv_report', 'title': 'csvReport'},
@@ -56,12 +57,23 @@ class HomeController with ChangeNotifier {
       'serverShortcuts': loc.serverShortcuts,
       'csvReport': loc.csvReport,
       'externalToken': loc.externalToken,
+      'clientConfig': loc.clientConfig,
+      'ntura': loc.ntura,
+      'backend': loc.backend,
       'cli': 'CLI',
       'cgo': 'CGO',
       'rpc': 'GRPC',
       'http': 'HTTP'
     };
     return labels[key].toString();
+  }
+
+  bool itemEnabled(String id) {
+    final item = items.where((element) => element['id'] == id).first;
+    if (item.containsKey('enabled')) {
+      return app.serverReady[item['enabled'].toString()] == true;
+    }
+    return true;
   }
 
   void onTheme() {
@@ -71,6 +83,20 @@ class HomeController with ChangeNotifier {
     } else {
       app.setSetting('theme', 'light');
       app.setState('theme', 'light');
+    }
+  }
+
+  void onList(Map<String, String> item) {
+    if (itemEnabled(item['id'].toString())) {
+      if (item['id'] == 'client_config') {
+        final url = 'http://${app.serverHost}:${app.serverPort}/client_config';
+        app.showUrl(url);
+      } else {
+        Navigator.restorablePushNamed(
+          context,
+          item['id'].toString(),
+        );
+      }
     }
   }
 }

@@ -40,6 +40,7 @@ class HomeWidget extends StatelessWidget {
           shrinkWrap: true,
           padding: const EdgeInsets.all(10.0),
           children: <Widget>[
+            serviceList(app.serverReady, ctr.labels),
             serviceList(app.enabledService, ctr.labels),
             const Divider(
               color: Colors.black,
@@ -64,26 +65,29 @@ class HomeWidget extends StatelessWidget {
                     itemBuilder: (BuildContext context, int index) {
                       final item = ctr.items[index];
                       return ListTile(
-                          title: Text(
-                            ctr.labels(item['title'].toString()),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
+                        title: Text(
+                          ctr.labels(item['title'].toString()),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
                           ),
-                          subtitle: ctr.labels(item['subtitle'].toString()) ==
-                                      '' ||
-                                  !item.containsKey('subtitle')
-                              ? null
-                              : Text(ctr.labels(item['subtitle'].toString()),
-                                  style: const TextStyle(color: Colors.red)),
-                          leading: const Icon(Icons.help_outline, size: 32),
-                          onTap: () {
-                            Navigator.restorablePushNamed(
-                              context,
-                              item['id'].toString(),
-                            );
-                          });
+                        ),
+                        subtitle:
+                            ctr.labels(item['subtitle'].toString()) == '' ||
+                                    !item.containsKey('subtitle')
+                                ? null
+                                : Text(ctr.labels(item['subtitle'].toString()),
+                                    style: const TextStyle(color: Colors.red)),
+                        leading: Icon(
+                            ctr.itemEnabled(item['id'].toString())
+                                ? Icons.help_outline
+                                : Icons.close,
+                            color: ctr.itemEnabled(item['id'].toString())
+                                ? Colors.orange.shade200
+                                : Colors.red,
+                            size: 32),
+                        onTap: () => ctr.onList(item),
+                      );
                     },
                   ),
                 ),

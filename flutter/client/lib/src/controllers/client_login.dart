@@ -9,7 +9,6 @@ https://raw.githubusercontent.com/nervatura/nervatura/master/LICENSE
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../app.dart';
 
@@ -95,14 +94,7 @@ class ClientLoginController with ChangeNotifier {
       final code = await app.getToken(username, database, true);
       url += '#code=$code&callback=${tokenCtr.text}&error=${logoutCtr.text}';
     }
-    try {
-      Uri uri = Uri.parse(url);
-      if (!await launchUrl(uri)) {
-        error = 'Could not launch $url';
-      }
-    } catch (err) {
-      error = err.toString();
-    }
+    error = await app.showUrl(url);
     notifyListeners();
   }
 }
