@@ -10,7 +10,7 @@
   "author": "Csaba Kappel <csaba.kappel@nervatura.com> (http://nervatura.com)",
   "license": "LGPL-3.0",
   "dependencies": {
-    "@grpc/grpc-js": "^1.9.9",
+    "@grpc/grpc-js": "^1.9.12",
     "@grpc/proto-loader": "^0.7.10",
     "async": "^3.2.5",
     "body-parser": "^1.20.2",
@@ -19,7 +19,7 @@
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
-    "nervatura": "^5.2.3"
+    "nervatura": "^5.2.4"
   },
   "optionalDependencies": {
     "ffi-napi": "^4.0.3"
