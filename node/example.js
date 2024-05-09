@@ -88,7 +88,8 @@ fn_map = {
 
 async.waterfall([
   function(callback) {
-    const api_type = "cgo"
+    const start_time = Date.now()
+    const api_type = "cli"
     utils.GetApi(
       process.env.NT_API_KEY, api_type, "DatabaseCreate", { alias: "demo", database: "demo", demo: true }, 
       function(err, result){
@@ -126,6 +127,7 @@ async.waterfall([
     });
   },
 
+  /*
   function(callback) {
     const start_time = Date.now()
     const api_type = "cgo"
@@ -144,6 +146,7 @@ async.waterfall([
     console.log("--------------------")
     callback(null)
   },
+  */
 
   function(callback) {
     utils.StartService(false, (err, controller)=>{
